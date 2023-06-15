@@ -1,9 +1,6 @@
-# ParticlesForHenri
+# CalorimeterFluxes
 
-Build human-readable files from events in an `.slcio` file.
+Code based on https://github.com/LLR-ILD/ParticlesForHenri
 
-The resulting file-format and content was chosen for the needs of Henri.
-`produce_pions.sh` shows an example of a full reconstruction chain:
-
-1. Generate events in the ILD detector (in `.slcio` format).
-2. From this file, create the human-readable files through `pylcio_powered_2ascii.py`.
+Decode `.slcio` files to produced histograms and maps of various fluxes in the calorimeters
+based on the cellID.
