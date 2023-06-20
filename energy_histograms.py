@@ -4,7 +4,7 @@ import logging
 import os
 import sys
 import tarfile
-
+import time
 from pyLCIO.io import LcioReader
 from pyLCIO import EVENT, IMPL, UTIL
 import ROOT
@@ -28,8 +28,8 @@ canvas = ROOT.TCanvas('canvas', 'Histogram', 800, 600)
 
 system_limits = {"ECALBarrel" : (8, 5, 5, 30) , "EndCaps" : (4, "4-6", 5, 30)}
 #selection format "S:M:T:L" conditions => "*:*:2:0-4,5-10" means no selection on M, S, 1 histo per 2 tower , 1 for layer 0 to 5, and one for layers in 5 to 10.
-dictionary_of_system = {"ECalEndcap": (["ECalEndcapSiHitsEven", "ECalEndcapSiHitsOdd"], [["*"],["*"],["*"],["*"]]),
-                        "ECALBarrel": (["ECalBarrelSiHitsEven", "ECalBarrelSiHitsOdd"], [["*"],["*"],["*"],["*"]]), 
+dictionary_of_system = {"ECalEndcap": (["ECalEndcapSiHitsEven", "ECalEndcapSiHitsOdd"], [["*"],["0","1","2","3","4"],["*"],["0:9","10:19","20:29"]]),
+                        "ECALBarrel": (["ECalBarrelSiHitsEven", "ECalBarrelSiHitsOdd"], [["*"],["0","1","2","3","4"],["*"],["0:9","10:19","20:29"]]), 
                         "ECalRing": (["EcalEndcapRingCollection"], [["*"],["*"],["*"],["*"]])}
 
 
@@ -64,7 +64,7 @@ def name_histograms():
                         hist = ROOT.TH1F(histogram_name, 'Energy histogram - {}'.format(histogram_name), 100, 0, 0.001)
                         hist_upper_scale = ROOT.TH1F(histogram_name + '_upper_scale', 'Upper-Scale Energy histogram - {}'.format(histogram_name), 10, 0.001, 0.03)
                         hist_upper_scale.SetCanExtend(ROOT.TH1.kAllAxes)
-                        hist_time = ROOT.TH1F(histogram_name + '_time', 'Time histogram - {}'.format(histogram_name), 100, 0, 10)
+                        hist_time = ROOT.TH1F(histogram_name + '_time', 'Time histogram - {}'.format(histogram_name), 100, 6, 14)
                         all_histograms[system].append(hist)
                         all_histograms_upper_Scale[system].append(hist_upper_scale)
                         all_time_histograms[system].append(hist_time)
@@ -91,7 +91,10 @@ def decoding(event, collection_name, hit, is_ecal_endcap_ring=False):
             elif cell_id_key in ["wafer", "slice"]:
                 # Endcaps have no wafer information.
                 continue
-        hit_info[encoded_key + 's'] = int(id_decoder[encoded_key].value())
+        try:
+            hit_info[encoded_key + 's'] = int(id_decoder[encoded_key].value())
+        except Exception as e:  # replace with the correct type of exception
+            pass
     return hit_info
 
 def subhit_decoding(hit):
@@ -110,25 +113,25 @@ def subhit_decoding(hit):
             hit_subhits.append(subhit_info)
     return hit_subhits
 
-def create_histogram(slcio_file, ascii_out_dir, ev_start, ev_stop):
-    
-    for system in dictionary_of_system.keys():
-        for hist, hist_upper_Scale, hist_time, system_dictionary in zip(histograms[system], histograms_upper_Scale[system], time_histograms[system], systems_dictionary[system]):
-            reader = LcioReader.LcioReader(slcio_file)
-            max_energy = 0
-            if ev_stop < 0:
-                ev_stop = reader.getNumberOfEvents() + ev_stop + 1
-            for i, event in enumerate(reader):
-                if i < ev_start:
-                    continue
-                if i >= ev_stop:
-                    break
+def create_histogram(slcio_file, ev_start, ev_stop):
+    reader = LcioReader.LcioReader(slcio_file)
+    if ev_stop < 0:
+        ev_stop = reader.getNumberOfEvents() + ev_stop + 1
+    for i, event in enumerate(reader):
+        # time.sleep(0.1)
+        # Print out a progress update
+        if i % 10 == 0:  # Adjust this condition to control how often updates are printed
+            print('Processed {} out of {} items'.format(i, reader.getNumberOfEvents()))
+        if i < ev_start:
+            continue
+        if i >= ev_stop:
+            break
+        for system in dictionary_of_system.keys():
+            for hist, hist_upper_Scale, hist_time, system_dictionary in zip(histograms[system], histograms_upper_Scale[system], time_histograms[system], systems_dictionary[system]):
                 for collection_name in dictionary_of_system[system][0]:          
                     calo_hits = event.getCollection(collection_name)
                     for j, hit in enumerate(calo_hits, start=1):
                         energy = hit.getEnergy()
-                        if energy > max_energy:
-                            max_energy = energy
                         decoded_hit = decoding(event,collection_name, hit)
                         values_same = True
                         for key in system_dictionary.keys():
@@ -152,50 +155,48 @@ def create_histogram(slcio_file, ascii_out_dir, ev_start, ev_stop):
                             for subhit in subhit_information:
                                 hist_time.Fill(subhit["time"], subhit["energy"])
 
-
-
-           
+    myfile = TFile( 'created_histograms/all.root', 'RECREATE' )
+    for system in dictionary_of_system.keys():
+        for hist, hist_upper_Scale, hist_time in zip(histograms[system], histograms_upper_Scale[system], time_histograms[system]):
             hist_time.Draw("HIST")
             canvas.SaveAs("created_histograms/Time_histogram_{}{}".format(hist.GetName(), ".pdf"))
+            canvas.SaveAs("created_histograms/Time_histogram_{}{}".format(hist.GetName(), ".root"))
+            hist_time.Write()
 
             hist_name = 'energy_histogram_{}.'.format(hist.GetName())
             hist.Draw()
             canvas.SaveAs("created_histograms/{}{}".format(hist_name, "pdf"))
-
-            canvas.Clear()
+            canvas.SaveAs("created_histograms/{}{}".format(hist_name, "root"))
+            hist.Write()
 
             ROOT.gPad.SetLogy()
-            # hist_upper_Scale.SetAxisRange(0.001, max_energy)
             
             hist_upper_Scale.Draw()
             canvas.SaveAs("created_histograms/{}{}{}".format("upper_scale_", hist_name, "pdf"))
-            ROOT.gPad.SetLogy(False)                       
-            # canvas.SaveAs("created_histograms/{}{}".format(hist_name, "root"))
+            canvas.SaveAs("created_histograms/{}{}{}".format("upper_scale_", hist_name, "root"))
+            hist_upper_Scale.Write()
+            ROOT.gPad.SetLogy(False)     
+
+    myfile.Close()                  
 
 
 def validate_command_line_args():
     """This just validates and returns the command line inputs."""
-    if len(sys.argv) not in [3, 5]: raise Exception(help_string)
+    if len(sys.argv) not in [2, 4]: raise Exception(help_string)
 
     slcio_file = sys.argv[1]
     if not os.path.isfile(slcio_file): raise Exception(help_string)
-    ascii_out_dir = os.path.abspath(sys.argv[2])
-    ascii_out_parent = os.path.dirname(ascii_out_dir)
-    if not os.path.isdir(ascii_out_parent): raise Exception(help_string)
-    if not os.path.exists(ascii_out_dir):
-        os.mkdir(ascii_out_dir)
-    #elif len(os.listdir(ascii_out_dir)) != 0: raise Exception(help_string)
-
-    if len(sys.argv) == 3:
+    
+    if len(sys.argv) == 2:
         ev_start = 0
         ev_stop = -1
     else:
         try:
-            ev_start = int(sys.argv[3])
-            ev_stop = int(sys.argv[4])
+            ev_start = int(sys.argv[2])
+            ev_stop = int(sys.argv[3])
         except (IndexError, ValueError): raise Exception(help_string)
-    return slcio_file, ascii_out_dir, ev_start, ev_stop
+    return slcio_file, ev_start, ev_stop
 
 if __name__ == "__main__":
-    slcio_file, ascii_out_dir, ev_start, ev_stop = validate_command_line_args()
-    create_histogram(slcio_file, ascii_out_dir, ev_start, ev_stop)
+    slcio_file, ev_start, ev_stop = validate_command_line_args()
+    create_histogram(slcio_file, ev_start, ev_stop)
