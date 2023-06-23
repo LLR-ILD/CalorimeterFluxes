@@ -28,9 +28,19 @@ canvas = ROOT.TCanvas('canvas', 'Histogram', 800, 600)
 
 system_limits = {"ECALBarrel" : (8, 5, 5, 30) , "EndCaps" : (4, "0-6", 5, 30)}
 #selection format "S:M:T:L" conditions => "*:*:2:0-4,5-10" means no selection on M, S, 1 histo per 2 tower , 1 for layer 0 to 5, and one for layers in 5 to 10.
-dictionary_of_system = {"ECalEndcap": (["ECalEndcapSiHitsEven", "ECalEndcapSiHitsOdd"], [["*"],["0","6"],["*"],["0:9","10:19","20:29"]]),
-                        "ECALBarrel": (["ECalBarrelSiHitsEven", "ECalBarrelSiHitsOdd"], [["*"],["1","2","3","4","5"],["*"],["0:9","10:19","20:29"]]), 
-                        "ECalRing": (["EcalEndcapRingCollection"], [["*"],["*"],["*"],["*"]])}
+dictionary_of_system = {
+        "SiECalEndcap": (["ECalEndcapSiHitsEven", "ECalEndcapSiHitsOdd"], [["*"],["0","6"],["*"],["0:9","10:19","20:29"]]),
+        "SiECALBarrel": (["ECalBarrelSiHitsEven", "ECalBarrelSiHitsOdd"], [["*"],["1","2","3","4","5"],["*"],["0:9","10:19","20:29"]]), 
+        "SiECalRing": (["EcalEndcapRingCollection"], [["*"],["*"],["*"],["*"]]), 
+        "ScECalEndcap": (["ECalEndcapScHitsEven", "ECalEndcapScHitsOdd"], [["*"],["0","6"],["*"],["0:9","10:19","20:29"]]),
+        "ScECALBarrel": (["ECalBarrelScHitsEven", "ECalBarrelScHitsOdd"], [["*"],["1","2","3","4","5"],["*"],["0:9","10:19","20:29"]]), 
+        "RPCHCalEndcap": (["HCalEndcapRPCHits"], [["*"],["0","6"],["*"],["0:9","10:19","20:29"]]),
+        "RPCHCalBarrel": (["HCalBarrelRPCHits"], [["*"],["1","2","3","4","5"],["*"],["0:9","10:19","20:29"]]), 
+        "RPCHCalECRing": (["EcalEndcapRingCollection"], [["*"],["*"],["*"],["*"]]),         
+        "ScHCalEndcap": (["HcalEndcapsCollection"], [["*"],["0","6"],["*"],["0:9","10:19","20:29"]]),
+        "ScHcalBarrel": (["HcalBarrelRegCollection"], [["*"],["1","2","3","4","5"],["*"],["0:9","10:19","20:29"]]), 
+        "ScHCalECRing": (["EcalEndcapRingCollection"], [["*"],["*"],["*"],["*"]])                 
+        }
 
 
 #Function to create the histograms and name them
