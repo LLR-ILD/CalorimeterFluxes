@@ -4,7 +4,7 @@ import logging
 import os
 import sys
 import tarfile
-import time
+
 from pyLCIO.io import LcioReader
 from pyLCIO import EVENT, IMPL, UTIL
 import ROOT
@@ -64,7 +64,7 @@ def name_histograms():
                         hist = ROOT.TH1F(histogram_name, 'Energy histogram - {}'.format(histogram_name), 100, 0, 0.001)
                         hist_upper_scale = ROOT.TH1F(histogram_name + '_upper_scale', 'Upper-Scale Energy histogram - {}'.format(histogram_name), 10, 0.001, 0.03)
                         hist_upper_scale.SetCanExtend(ROOT.TH1.kAllAxes)
-                        hist_time = ROOT.TH1F(histogram_name + '_time', 'Time histogram - {}'.format(histogram_name), 100, 6, 14)
+                        hist_time = ROOT.TH1F(histogram_name + '_time', 'Time histogram - {}'.format(histogram_name), 100, 0, 10)
                         all_histograms[system].append(hist)
                         all_histograms_upper_Scale[system].append(hist_upper_scale)
                         all_time_histograms[system].append(hist_time)
@@ -91,10 +91,7 @@ def decoding(event, collection_name, hit, is_ecal_endcap_ring=False):
             elif cell_id_key in ["wafer", "slice"]:
                 # Endcaps have no wafer information.
                 continue
-        try:
-            hit_info[encoded_key + 's'] = int(id_decoder[encoded_key].value())
-        except Exception as e:  # replace with the correct type of exception
-            pass
+        hit_info[encoded_key + 's'] = int(id_decoder[encoded_key].value())
     return hit_info
 
 def subhit_decoding(hit):
@@ -132,6 +129,8 @@ def create_histogram(slcio_file, histo_dir, ev_start, ev_stop):
                     calo_hits = event.getCollection(collection_name)
                     for j, hit in enumerate(calo_hits, start=1):
                         energy = hit.getEnergy()
+                        if energy > max_energy:
+                            max_energy = energy
                         decoded_hit = decoding(event,collection_name, hit)
                         values_same = True
                         for key in system_dictionary.keys():
@@ -169,6 +168,7 @@ def create_histogram(slcio_file, histo_dir, ev_start, ev_stop):
             hist.Write()
 
             ROOT.gPad.SetLogy()
+            # hist_upper_Scale.SetAxisRange(0.001, max_energy)
             
             hist_upper_Scale.Draw()
             canvas.SaveAs(str(histo_dir) + "/{}_energy_histogram_{}".format("upper_scale", hist.GetName()) + ".pdf")
@@ -198,6 +198,8 @@ def validate_command_line_args():
         ev_stop = -1
     else:
         try:
+            ev_start = int(sys.argv[3])
+            ev_stop = int(sys.argv[4])
             ev_start = int(sys.argv[3])
             ev_stop = int(sys.argv[4])
         except (IndexError, ValueError): raise Exception(help_string)

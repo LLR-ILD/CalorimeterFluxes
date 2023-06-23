@@ -1,6 +1,6 @@
 data
 quick_checks.ipynb
 .root_hist
-ILD_l5_v02.xml
+*.code-workspace
 *.log
 *.root

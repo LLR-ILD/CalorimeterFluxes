@@ -14,6 +14,9 @@ change_particle_type () {
 }
 
 run_simulation () {
+    if [ "$1" <> "" ]; then
+        N_EVENTS=$1
+    fi
     if [ -e data/$PROD_NAME ]; then
         printf "$PROD_NAME was already used for another production run. "
         printf "Please remove that run or change PROD_NAME.\n"
@@ -32,6 +35,7 @@ run_simulation () {
             --numberOfEvents=$N_EVENTS \
             --outputFile data/$PROD_NAME/$PARTICLE_TYPE.slcio \
         2>&1 | tee data/$PROD_NAME/sim_${PARTICLE_TYPE}.log
+        
     fi
 }
 
@@ -50,13 +54,13 @@ if [ "$1" == "" ]; then
     run_pylcio_powered_2ascii
 
     change_particle_type pi-
-    run_simulation gamma
+    run_simulation 
     run_pylcio_powered_2ascii
 
-    run_simulation gamma
+    run_simulation 
     run_pylcio_powered_2ascii
 else
     change_particle_type $1
-    run_simulation gamma
+    run_simulation $2
     run_pylcio_powered_2ascii
 fi
