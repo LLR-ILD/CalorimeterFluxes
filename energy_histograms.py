@@ -26,10 +26,10 @@ $ python pylcio_powered_2ascii.py slcio_file ascii_out_dir ev_start ev_stop
 #Creating ROOT canvas to save the histograms
 canvas = ROOT.TCanvas('canvas', 'Histogram', 800, 600)
 
-system_limits = {"ECALBarrel" : (8, 5, 5, 30) , "EndCaps" : (4, "4-6", 5, 30)}
+system_limits = {"ECALBarrel" : (8, 5, 5, 30) , "EndCaps" : (4, "0-6", 5, 30)}
 #selection format "S:M:T:L" conditions => "*:*:2:0-4,5-10" means no selection on M, S, 1 histo per 2 tower , 1 for layer 0 to 5, and one for layers in 5 to 10.
-dictionary_of_system = {"ECalEndcap": (["ECalEndcapSiHitsEven", "ECalEndcapSiHitsOdd"], [["*"],["0","1","2","3","4"],["*"],["0:9","10:19","20:29"]]),
-                        "ECALBarrel": (["ECalBarrelSiHitsEven", "ECalBarrelSiHitsOdd"], [["*"],["0","1","2","3","4"],["*"],["0:9","10:19","20:29"]]), 
+dictionary_of_system = {"ECalEndcap": (["ECalEndcapSiHitsEven", "ECalEndcapSiHitsOdd"], [["*"],["0","6"],["*"],["0:9","10:19","20:29"]]),
+                        "ECALBarrel": (["ECalBarrelSiHitsEven", "ECalBarrelSiHitsOdd"], [["*"],["1","2","3","4","5"],["*"],["0:9","10:19","20:29"]]), 
                         "ECalRing": (["EcalEndcapRingCollection"], [["*"],["*"],["*"],["*"]])}
 
 
@@ -113,7 +113,7 @@ def subhit_decoding(hit):
             hit_subhits.append(subhit_info)
     return hit_subhits
 
-def create_histogram(slcio_file, ev_start, ev_stop):
+def create_histogram(slcio_file, histo_dir, ev_start, ev_stop):
     reader = LcioReader.LcioReader(slcio_file)
     if ev_stop < 0:
         ev_stop = reader.getNumberOfEvents() + ev_stop + 1
@@ -155,26 +155,26 @@ def create_histogram(slcio_file, ev_start, ev_stop):
                             for subhit in subhit_information:
                                 hist_time.Fill(subhit["time"], subhit["energy"])
 
-    myfile = TFile( 'created_histograms/all.root', 'RECREATE' )
+    myfile = ROOT.TFile( str(histo_dir) + '/all.root', 'RECREATE' )
     for system in dictionary_of_system.keys():
         for hist, hist_upper_Scale, hist_time in zip(histograms[system], histograms_upper_Scale[system], time_histograms[system]):
             hist_time.Draw("HIST")
-            canvas.SaveAs("created_histograms/Time_histogram_{}{}".format(hist.GetName(), ".pdf"))
-            canvas.SaveAs("created_histograms/Time_histogram_{}{}".format(hist.GetName(), ".root"))
+            canvas.SaveAs(str(histo_dir) + "/Time_histogram_{}".format(hist.GetName()) + ".pdf")
+            # canvas.SaveAs(str(histo_dir) + "/Time_histogram_{}".format(hist.GetName()) + ".root")
             hist_time.Write()
 
-            hist_name = 'energy_histogram_{}.'.format(hist.GetName())
             hist.Draw()
-            canvas.SaveAs("created_histograms/{}{}".format(hist_name, "pdf"))
-            canvas.SaveAs("created_histograms/{}{}".format(hist_name, "root"))
+            canvas.SaveAs(str(histo_dir) + "/energy_histogram_{}".format(hist.GetName()) + ".pdf")
+            #canvas.SaveAs(str(histo_dir) + "/energy_histogram_{}".format(hist.GetName()) + ".root")
             hist.Write()
 
             ROOT.gPad.SetLogy()
             
             hist_upper_Scale.Draw()
-            canvas.SaveAs("created_histograms/{}{}{}".format("upper_scale_", hist_name, "pdf"))
-            canvas.SaveAs("created_histograms/{}{}{}".format("upper_scale_", hist_name, "root"))
+            canvas.SaveAs(str(histo_dir) + "/{}_energy_histogram_{}".format("upper_scale", hist.GetName()) + ".pdf")
+            # canvas.SaveAs(str(histo_dir) + "/{}_energy_histogram_{}".format("upper_scale", hist.GetName()) + ".root")
             hist_upper_Scale.Write()
+
             ROOT.gPad.SetLogy(False)     
 
     myfile.Close()                  
@@ -182,21 +182,27 @@ def create_histogram(slcio_file, ev_start, ev_stop):
 
 def validate_command_line_args():
     """This just validates and returns the command line inputs."""
-    if len(sys.argv) not in [2, 4]: raise Exception(help_string)
+    if len(sys.argv) not in [3, 5]: raise Exception(help_string)
 
     slcio_file = sys.argv[1]
     if not os.path.isfile(slcio_file): raise Exception(help_string)
-    
-    if len(sys.argv) == 2:
+    histo_dir = os.path.abspath(sys.argv[2])
+    hist_out_parent = os.path.dirname(histo_dir)
+    if not os.path.isdir(hist_out_parent): raise Exception(help_string)
+    if not os.path.exists(histo_dir):
+        os.mkdir(histo_dir)
+    #elif len(os.listdir(ascii_out_dir)) != 0: raise Exception(help_string)
+
+    if len(sys.argv) == 3:
         ev_start = 0
         ev_stop = -1
     else:
         try:
-            ev_start = int(sys.argv[2])
-            ev_stop = int(sys.argv[3])
+            ev_start = int(sys.argv[3])
+            ev_stop = int(sys.argv[4])
         except (IndexError, ValueError): raise Exception(help_string)
-    return slcio_file, ev_start, ev_stop
+    return slcio_file, histo_dir, ev_start, ev_stop
 
 if __name__ == "__main__":
-    slcio_file, ev_start, ev_stop = validate_command_line_args()
-    create_histogram(slcio_file, ev_start, ev_stop)
+    slcio_file, histo_dir, ev_start, ev_stop = validate_command_line_args()
+    create_histogram(slcio_file, histo_dir, ev_start, ev_stop)
