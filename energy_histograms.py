@@ -263,4 +263,3 @@ if __name__ == "__main__":
     slcio_file, histo_dir, ev_start, ev_stop = validate_command_line_args()
     fill_histogram(slcio_file, ev_start, ev_stop)
     write_histogram(histo_dir)
-    print('sadd')
