@@ -28,9 +28,20 @@ canvas = ROOT.TCanvas('canvas', 'Histogram', 800, 600)
 
 system_limits = {"ECALBarrel" : (8, 5, 5, 30) , "EndCaps" : (4, "0-6", 5, 30)}
 #selection format "S:M:T:L" conditions => "*:*:2:0-4,5-10" means no selection on M, S, 1 histo per 2 tower , 1 for layer 0 to 5, and one for layers in 5 to 10.
-dictionary_of_system = {"ECalEndcap": (["ECalEndcapSiHitsEven", "ECalEndcapSiHitsOdd"], [["*"],["0","6"],["*"],["0:9","10:19","20:29"]]),
-                        "ECALBarrel": (["ECalBarrelSiHitsEven", "ECalBarrelSiHitsOdd"], [["*"],["1","2","3","4","5"],["*"],["0:9","10:19","20:29"]]), 
-                        "ECalRing": (["EcalEndcapRingCollection"], [["*"],["*"],["*"],["*"]])}
+dictionary_of_system = {
+        "SiECalEndcap": (["ECalEndcapSiHitsEven", "ECalEndcapSiHitsOdd"], [["*"],["0","6"],["*"],["0:9","10:19","20:29"]]),
+        "SiECALBarrel": (["ECalBarrelSiHitsEven", "ECalBarrelSiHitsOdd"], [["*"],["1","2","3","4","5"],["*"],["0:9","10:19","20:29"]]), 
+        "SiECalRing": (["EcalEndcapRingCollection"], [["*"],["*"],["*"],["*"]]), 
+        "ScECalEndcap": (["ECalEndcapScHitsEven", "ECalEndcapScHitsOdd"], [["*"],["0","6"],["*"],["0:9","10:19","20:29"]]),
+        "ScECALBarrel": (["ECalBarrelScHitsEven", "ECalBarrelScHitsOdd"], [["*"],["1","2","3","4","5"],["*"],["0:9","10:19","20:29"]]), 
+        "RPCHCalEndcap": (["HCalEndcapRPCHits"], [["*"],["0","6"],["*"],["0:19","20:39","40:59"]]),
+        "RPCHCalBarrel": (["HCalBarrelRPCHits"], [["*"],["1","2","3","4","5"],["*"],["0:19","20:39","40:59"]]), 
+        "RPCHCalECRing": (["EcalEndcapRingCollection"], [["*"],["*"],["*"],["*"]]),         
+        "ScHCalEndcap": (["HcalEndcapsCollection"], [["*"],["0","6"],["*"],["0:19","20:39","40:59"]]),
+        "ScHcalBarrel": (["HcalBarrelRegCollection"], [["*"],["1","2","3","4","5"],["*"],["0:19","20:39","40:59"]]), 
+        "ScHCalECRing": (["EcalEndcapRingCollection"], [["*"],["*"],["*"],["*"]])                 
+        }
+
 
 
 #Function to create the histograms and name them
@@ -38,12 +49,14 @@ def name_histograms():
     all_histograms = {}
     all_histograms_upper_Scale = {}
     all_time_histograms = {}
+    all_Nhits_histograms = {}
     system_dictionary = {}
     for system in dictionary_of_system.keys():
         system_dictionary[system] = []
         all_histograms[system] = []
         all_histograms_upper_Scale[system] = []
         all_time_histograms[system] = []
+        all_Nhits_histograms[system] = []
         selection = dictionary_of_system[system][1] 
         staves = selection[0]
         modules = selection[1]
@@ -62,15 +75,17 @@ def name_histograms():
                                                                                         tower="_T" + tower if tower != "*" else "", 
                                                                                         layer="_L" + layer if layer != "*" else "")
                         hist = ROOT.TH1F(histogram_name, 'Energy histogram - {}'.format(histogram_name), 100, 0, 0.001)
-                        hist_upper_scale = ROOT.TH1F(histogram_name + '_upper_scale', 'Upper-Scale Energy histogram - {}'.format(histogram_name), 10, 0.001, 0.03)
+                        hist_upper_scale = ROOT.TH1F(histogram_name + '_upper_scale', 'Upper-Scale Energy histogram - {}'.format(histogram_name), 100, 0.001, 0.03)
                         hist_upper_scale.SetCanExtend(ROOT.TH1.kAllAxes)
                         hist_time = ROOT.TH1F(histogram_name + '_time', 'Time histogram - {}'.format(histogram_name), 100, 0, 10)
+                        hist_Nhits = ROOT.TH1F(histogram_name + '#hits', 'Number-of-hits histogram - {}'.format(histogram_name), 100, 0, 10000)
                         all_histograms[system].append(hist)
                         all_histograms_upper_Scale[system].append(hist_upper_scale)
                         all_time_histograms[system].append(hist_time)
-    return all_histograms, all_histograms_upper_Scale, all_time_histograms, system_dictionary
+                        all_Nhits_histograms[system].append(hist_Nhits)
+    return all_histograms, all_histograms_upper_Scale, all_time_histograms, all_Nhits_histograms, system_dictionary
 
-histograms, histograms_upper_Scale, time_histograms, systems_dictionary = name_histograms()
+histograms, histograms_upper_Scale, time_histograms, all_Nhits_histograms, systems_dictionary = name_histograms()
 
 def decoding(event, collection_name, hit, is_ecal_endcap_ring=False):
     cell_id_info = ["system", "stave", "module", "cellX", "cellY", "tower", "layer", "wafer", "slice"]
@@ -91,7 +106,10 @@ def decoding(event, collection_name, hit, is_ecal_endcap_ring=False):
             elif cell_id_key in ["wafer", "slice"]:
                 # Endcaps have no wafer information.
                 continue
-        hit_info[encoded_key + 's'] = int(id_decoder[encoded_key].value())
+        try:
+            hit_info[encoded_key + 's'] = int(id_decoder[encoded_key].value())
+        except Exception as e:  # replace with the correct type of exception
+            pass
     return hit_info
 
 def subhit_decoding(hit):
@@ -110,7 +128,7 @@ def subhit_decoding(hit):
             hit_subhits.append(subhit_info)
     return hit_subhits
 
-def create_histogram(slcio_file, histo_dir, ev_start, ev_stop):
+def fill_histogram(slcio_file, ev_start, ev_stop):
     reader = LcioReader.LcioReader(slcio_file)
     if ev_stop < 0:
         ev_stop = reader.getNumberOfEvents() + ev_stop + 1
@@ -124,13 +142,12 @@ def create_histogram(slcio_file, histo_dir, ev_start, ev_stop):
         if i >= ev_stop:
             break
         for system in dictionary_of_system.keys():
-            for hist, hist_upper_Scale, hist_time, system_dictionary in zip(histograms[system], histograms_upper_Scale[system], time_histograms[system], systems_dictionary[system]):
+            for hist, hist_upper_Scale, hist_time, hist_Nhits, system_dictionary in zip(histograms[system], histograms_upper_Scale[system], time_histograms[system], all_Nhits_histograms[system], systems_dictionary[system]):
+                Nhits = 0
                 for collection_name in dictionary_of_system[system][0]:          
                     calo_hits = event.getCollection(collection_name)
                     for j, hit in enumerate(calo_hits, start=1):
                         energy = hit.getEnergy()
-                        if energy > max_energy:
-                            max_energy = energy
                         decoded_hit = decoding(event,collection_name, hit)
                         values_same = True
                         for key in system_dictionary.keys():
@@ -144,16 +161,22 @@ def create_histogram(slcio_file, histo_dir, ev_start, ev_stop):
                                 values_same = False
                                 break
                         if values_same:
+                            #Number-of-cells-with-energy-above-threshold-per-cell histogram 
+                            if energy > 0.0002:
+                                Nhits += 1
+                            #Lower and upper scale histograms
                             if 0 <= energy < 0.001:
                                 hist.Fill(energy)
                             else:
                                 hist_upper_Scale.Fill(energy)
-
                             #time histogram
                             subhit_information = subhit_decoding(hit)
                             for subhit in subhit_information:
                                 hist_time.Fill(subhit["time"], subhit["energy"])
+                hist_Nhits.Fill(Nhits)
+                
 
+def write_histogram(histo_dir):
     myfile = ROOT.TFile( str(histo_dir) + '/all.root', 'RECREATE' )
     for system in dictionary_of_system.keys():
         for hist, hist_upper_Scale, hist_time in zip(histograms[system], histograms_upper_Scale[system], time_histograms[system]):
@@ -177,7 +200,7 @@ def create_histogram(slcio_file, histo_dir, ev_start, ev_stop):
 
             ROOT.gPad.SetLogy(False)     
 
-    myfile.Close()                  
+    myfile.Close()               
 
 
 def validate_command_line_args():
@@ -205,6 +228,8 @@ def validate_command_line_args():
         except (IndexError, ValueError): raise Exception(help_string)
     return slcio_file, histo_dir, ev_start, ev_stop
 
+
 if __name__ == "__main__":
     slcio_file, histo_dir, ev_start, ev_stop = validate_command_line_args()
-    create_histogram(slcio_file, histo_dir, ev_start, ev_stop)
+    fill_histogram(slcio_file, ev_start, ev_stop)
+    write_histogram(histo_dir)
