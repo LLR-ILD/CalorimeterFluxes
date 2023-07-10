@@ -1,0 +1,1 @@
+bash -c "python energy_histograms.py data/ILD/FullSim/wzp6_ee_qqH_ecm240_fullSim_0+100.slcio data/ILD/FullSim/histograms"
