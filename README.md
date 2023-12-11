@@ -12,3 +12,7 @@ Table of contents
 
 Clone and initialisation
 =================
+Start by cloning the repository:
+```
+git clone https://github.com/LLR-ILD/CalorimeterFluxes.git
+```
