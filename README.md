@@ -9,6 +9,7 @@ Table of contents
   * [CalorimeterFluxes](#CalorimeterFluxes)
   * [Table of contents](#table-of-contents)
   * [Clone and initialisation](#clone-and-initilisation)
+  * [Uisng Hierarchy](#using-hierarchy)
 
 Clone and initialisation
 =================
@@ -20,7 +21,14 @@ Navigate to the repository directory:
 ```
 cd /path/to/CalorimterFluxes
 ```
-Source '''init.sh''' file:
+Initialize:
 ```
-source init.sh
+source ./init.sh
 ```
+Using Hierarchy
+=================
+The details of every step are explained in the Read.md files in each designated directory.
+1. Prepare the generator-level simulation files in STDHEP format. Examples of simulated data are given in the ```CalorimeterFluxes/generator_level_simulation``` directory which can be edited depending on the desired analysis.
+2. The full simulation in ILD is done using  the ```CalorimeterFluxes/full_simulation``` directory.
+3. 1D histograms are obtained using the ```CalorimeterFluxes/oneD_histograms``` directory.
+4. Step 4 depends on what the user wants. It can be obtaining 2D histograms from grouped 1D histograms using the ```CalorimeterFluxes/twoD_histograms``` directory. It also can be merging different processes in one unified 1D histograms (1 histogram per coordinate selection); then, getting the 2D histograms.
