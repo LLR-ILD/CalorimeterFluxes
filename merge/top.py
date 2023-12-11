@@ -1,14 +1,17 @@
 import ROOT
 import os
 import sys
+
+sys.path.append('/home/llr/ilc/hassouna/script2')
 from CalorimeterFluxes.twoD_histograms.D_histograms_library import get_histograms
 from CalorimeterFluxes.oneD_histograms.energy_histos import systems, system_functions, histograms_to_select
 
 
-processes = ["qq90", "ll90", "90ee030", "90ee30150"]
+processes = ["qq90", "ll90", "030ee90", "above30ee90"]
 
-root_file_list = ["/home/llr/ilc/hassouna/script2/CalorimeterFluxes/data/ILD/FullSim/energy_histograms/{}/all.root".format(process) for process in processes]
-type_names = ["time", "lower_scale_energy", "upper_scale_energy", "#Nhits"]
+root_file_list = ["/home/llr/ilc/hassouna/script2/CalorimeterFluxes/data/ILD/FullSim/energy_histograms/GeV90/{}/all.root".format(process) for process in processes]
+type_names = ["time", "lower_scale_energy", "upper_scale_energy", "scaled_upper_scale_energy", "#Nhits", "high_#Nhits"]
+
 
 histograms_dict = {}
 for i, process in enumerate(processes):
@@ -36,6 +39,10 @@ def prepare_combined_histograms(histograms, styles, weights):
         hist.SetLineStyle(style.get('lineStyle', 1))
         hist.SetLineWidth(style.get('lineWidth', 2))
         # Additional style attributes can be set here
+
+        y_title = hist.GetYaxis().GetTitle()
+        hist.GetYaxis().SetTitle(y_title + " per second")
+
         combined_histograms.append(hist)
 
     return combined_histograms
@@ -47,7 +54,7 @@ styles = [
     {'color': ROOT.kBlack, 'lineStyle': 1, 'lineWidth': 2}
 ]
 
-weights = [1.0, 5.0, 100.0, 100.0]  # Example weights for each histogram
+weights = [4.82, 0.484, 0.0141, 0.809]  # Example weights for each histogram
 
 histo_dir = sys.argv[1]
 
@@ -68,6 +75,7 @@ for j, histogram_type in enumerate(type_names):
                 
                 combined_histograms = combined_histograms = prepare_combined_histograms(histograms_to_merge, styles, weights)
                 c = ROOT.TCanvas()
+                c.SetLogy(1)
                 legend = ROOT.TLegend(0.7, 0.7, 0.9, 0.9)  # Adjust these coordinates as needed
 
                 for idx, hist in enumerate(combined_histograms):

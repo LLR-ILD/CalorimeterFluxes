@@ -3,7 +3,7 @@
 BASE_PATH="/home/llr/ilc/hassouna/script2/CalorimeterFluxes/data/ILD/FullSim/stdhep" #replace with the path to the stdhep.gz file.
 
 # Loop over directories matching the pattern
-for dir in "$BASE_PATH"/wzp6_ee_ee_Mee_30_150_ecm3651; do
+for dir in "$BASE_PATH"/wzp6_ee_ZH_ecm365; do
     # Ensure the matched name is a directory
     if [[ -d "$dir" ]]; then
         # Get the name of the directory

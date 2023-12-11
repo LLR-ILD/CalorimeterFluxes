@@ -62,18 +62,18 @@ canvas = TCanvas('canvas', 'Histogram', 800, 600)
 
 
 #Lists of slcio files along with the desired start and end events (ev_stop = -1 would mean that no upper limit as per the definition of fill_histograms function)
-# complementary_file_list = glob("/home/llr/ilc/hassouna/script2/CalorimeterFluxes/data/ILD/FullSim/wzp6_ee_ll_ecm160/complementary*.slcio")
-# partial_file_list = glob("/home/llr/ilc/hassouna/script2/CalorimeterFluxes/data/ILD/FullSim/wzp6_ee_ll_ecm160/partial*.slcio")
-# slcio_file_list = partial_file_list + complementary_file_list
-# number_of_processes = len(slcio_file_list)
-number_of_processes = 25
-slcio_file_list = ["/home/llr/ilc/hassouna/script2/CalorimeterFluxes/data/ILD/FullSim/wzp6_ee_qq_ecm90/partial_{}_fullSim_wzp6_ee_qq_ecm90_0+10000.slcio".format(i) for i in range(number_of_processes)]
+partial_file_list = glob("/home/llr/ilc/hassouna/script2/CalorimeterFluxes/data/ILD/FullSim/wzp6_ee_qq_ecm365/partial*.slcio")
+complementary_file_list = glob("/home/llr/ilc/hassouna/script2/CalorimeterFluxes/data/ILD/FullSim/wzp6_ee_qq_ecm365/complementary*.slcio")
+slcio_file_list = partial_file_list + complementary_file_list
+number_of_processes = len(slcio_file_list)
+# number_of_processes = 25
+# slcio_file_list = ["/home/llr/ilc/hassouna/script2/CalorimeterFluxes/data/ILD/FullSim/wzp6_ee_ZH_ecm365/partial_{}_fullSim_wzp6_ee_ZH_ecm365_0+10000.slcio".format(i) for i in range(number_of_processes)]
 
 ev_start_list = [0 for _ in range(number_of_processes)] 
-ev_stop_list = [100 for _ in range(number_of_processes)]
+ev_stop_list = [-1 for _ in range(number_of_processes)]
     
-# ev_start_list = [25*i for i in range(number_of_processes)] 
-# ev_stop_list = [25*(i+1) for i in range(number_of_processes)]
+# ev_start_list = [400*i for i in range(number_of_processes)] 
+# ev_stop_list = [400*(i+1) for i in range(number_of_processes)
 
 if __name__ == "__main__":
     profiler = Profile()
