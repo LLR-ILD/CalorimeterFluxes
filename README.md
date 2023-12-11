@@ -16,3 +16,11 @@ Start by cloning the repository:
 ```
 git clone https://github.com/LLR-ILD/CalorimeterFluxes.git
 ```
+Navigate to the repository directory:
+```
+cd /path/to/CalorimterFluxes
+```
+Source '''init.sh''' file:
+```
+source init.sh
+```
