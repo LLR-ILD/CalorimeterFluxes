@@ -1,6 +1,14 @@
-# CalorimeterFluxes
+CalorimeterFluxes
+=============
 
-Code based on https://github.com/LLR-ILD/ParticlesForHenri
+This package is used mainly to take slcio files of fully simulated physics processes or machine background in the ILD calorimeter as input to produce histograms of any chosen selection of the calorimeter components and coordinates.
+Further utilities can be made using this package as well such as taking generator-level simulation and running a full simulation, producing 2D histograms of grouped 1D histograms, and producing geometry plots of the calorimeter.  
 
-Decode `.slcio` files to produced histograms and maps of various fluxes in the calorimeters
-based on the cellID.
+Table of contents
+=================
+  * [CalorimeterFluxes](#CalorimeterFluxes)
+  * [Table of contents](#table-of-contents)
+  * [Clone and initialisation](#clone-and-initilisation)
+
+Clone and initialisation
+=================
