@@ -47,7 +47,8 @@ dictionary_of_system = {
 # systems = dictionary_of_system.keys() # dictionary_of_system.keys() #Retrieve all the systems
 # systems.remove("RPCHCalECRing")
 systems = dictionary_of_system.keys()
-collections = list(dict.fromkeys(list(chain(*[dictionary_of_system[system][0] for system in dictionary_of_system.keys()])))) #Retrieve all the collections
+# systems = ["SiECalEndcap", "SiECalRing"]
+collections = list(dict.fromkeys(list(chain(*[dictionary_of_system[system][0] for system in systems])))) #Retrieve all the collections
 system_functions = {} #Retrieve all the functions per systems
 histograms_to_select = {}
 for system in systems:
@@ -62,12 +63,12 @@ canvas = TCanvas('canvas', 'Histogram', 800, 600)
 
 
 #Lists of slcio files along with the desired start and end events (ev_stop = -1 would mean that no upper limit as per the definition of fill_histograms function)
-partial_file_list = glob("/home/llr/ilc/hassouna/script2/CalorimeterFluxes/data/ILD/FullSim/wzp6_ee_qq_ecm365/partial*.slcio")
-complementary_file_list = glob("/home/llr/ilc/hassouna/script2/CalorimeterFluxes/data/ILD/FullSim/wzp6_ee_qq_ecm365/complementary*.slcio")
-slcio_file_list = partial_file_list + complementary_file_list
-number_of_processes = len(slcio_file_list)
-# number_of_processes = 25
-# slcio_file_list = ["/home/llr/ilc/hassouna/script2/CalorimeterFluxes/data/ILD/FullSim/wzp6_ee_ZH_ecm365/partial_{}_fullSim_wzp6_ee_ZH_ecm365_0+10000.slcio".format(i) for i in range(number_of_processes)]
+# partial_file_list = glob("/home/llr/ilc/hassouna/script2/CalorimeterFluxes/data/ILD/FullSim/wzp6_ee_qq_ecm365/partial*.slcio")
+# complementary_file_list = glob("/home/llr/ilc/hassouna/script2/CalorimeterFluxes/data/ILD/FullSim/wzp6_ee_qq_ecm365/complementary*.slcio")
+# slcio_file_list = partial_file_list + complementary_file_list
+# number_of_processes = len(slcio_file_list)
+number_of_processes = 100
+slcio_file_list = ["/home/llr/ilc/hassouna/script2/CalorimeterFluxes/data/ILD/FullSim/Machine/beamstrahlung_FCCee@91GeV/ILD_l5_v11gamma/pairs-{}_ZatIP_tpcTimeKeepMC_keep_microcurlers_10MeV_30mrad_ILD_l5_v11gamma.slcio".format(i+1) for i in range(number_of_processes)]
 
 ev_start_list = [0 for _ in range(number_of_processes)] 
 ev_stop_list = [-1 for _ in range(number_of_processes)]

@@ -1,10 +1,14 @@
 import ROOT
-from CalorimeterFluxes.twoD_histograms.D_histograms_library import get_histograms
-from CalorimeterFluxes.oneD_histograms.histograms_library import find_max_range , saving_histogram
-from CalorimeterFluxes.oneD_histograms.energy_histos import systems, system_functions, histograms_to_select
+import sys
+import os
+from twoD_histograms.D_histograms_library import get_histograms
+from oneD_histograms.histograms_library import find_max_range
+from oneD_histograms.energy_histos import systems, system_functions, histograms_to_select
+
+energy = sys.argv[1]
 
 def merge_histograms(histogram_list, histogram_weights, can_extend = True):
-    """This function is a modification of merge_histograms in histograms_library.py script. 
+    """This function is a modification of merge_histograms in CalorimeterFluxes.oneD_histograms.histograms_library.py script. 
     The only modification is regarding the name and the title."""
 
     """The histograms' properties are all similar. 
@@ -23,7 +27,7 @@ def merge_histograms(histogram_list, histogram_weights, can_extend = True):
 
     master_hist = ROOT.TH1F(name, title, bins_number, minimum, maximum)
     master_hist.GetXaxis().SetTitle(x_title)
-    master_hist.GetYaxis().SetTitle(y_title)
+    master_hist.GetYaxis().SetTitle(y_title + " per second")
 
     # Create a TList to hold the histograms
     hist_list = ROOT.TList()
@@ -38,8 +42,25 @@ def merge_histograms(histogram_list, histogram_weights, can_extend = True):
 
     return master_hist  # This is the final merged histogram
 
+def saving_histogram(histo_dir, canvas, type_name, type_dict, func_dir, system, function):
+    """This function is minimally modified from write_histogram in CalorimeterFluxes.oneD_histograms.histograms_library.py script."""
+    type_name_dir = func_dir.mkdir(type_name)
+    type_name_dir.cd()
+    directory_type_name_dir = str(histo_dir) + "/" + system + "/" + function + "/" + type_name
+    if not os.path.exists(directory_type_name_dir): os.makedirs(directory_type_name_dir)
+    
+    for hist in type_dict[system][function]:
+        canvas.SetLogy(1)
+        hist.Draw("HIST")
+        canvas.SaveAs(directory_type_name_dir + "/{}".format(hist.GetName()) + ".pdf")
+        hist.Write()
+        # Explicitly delete the histogram after writing to ROOT file and saving to PDF
+        hist.Delete()
+
 def write_histogram(histo_dir, canvas, merged_histos, systemss, system_per_functions, histos_to_select_dict):
-    """This function is minimally modified from write_histogram in histograms_library.py script."""
+    """This function is minimally modified from CalorimeterFluxes.oneD_histograms.histograms_library.py script."""
+    directory_type_name_dir = str(histo_dir)
+    if not os.path.exists(directory_type_name_dir): os.makedirs(directory_type_name_dir)
     myfile = ROOT.TFile(str(histo_dir) + '/all.root', 'RECREATE')
    
     for system in systemss:
@@ -54,11 +75,12 @@ def write_histogram(histo_dir, canvas, merged_histos, systemss, system_per_funct
     myfile.Close()          
 
 # The weights are in the same order as the processes.
-processes = ["qq90", "ll90", "030ee90", "30150ee90"]
-weights = [1, 1, 2, 1]
+processes = ["qq90", "ll90", "030ee90", "above30ee90", "machine"]
+weights = [4.82, 0.484, 0.0141, 0.809, 4e+5]
 
-root_file_list = ["/home/llr/ilc/hassouna/script2/CalorimeterFluxes/data/ILD/FullSim/energy_histograms/{}/all.root".format(process) for process in processes]
-type_names = ["time", "time_peaks", "lower_scale_energy", "upper_scale_energy", "#Nhits"]
+root_file_list = ["/home/llr/ilc/hassouna/script2/CalorimeterFluxes/data/ILD/FullSim/energy_histograms/{}/{}/all.root".format(energy, process) for process in processes]
+type_names = ["time", "lower_scale_energy", "upper_scale_energy", "scaled_upper_scale_energy", "#Nhits", "high_#Nhits"]
+histogram_numbers = len(type_names)
 
 histograms_dict = {}
 for i, process in enumerate(processes):
@@ -66,7 +88,7 @@ for i, process in enumerate(processes):
     histograms_dict[process] = get_histograms(process_file)
 
 """The systems and functions and histogram types are all the same. Thus, I read them from just one dictionary of histograms."""
-merged_histograms = [{} for _ in range(5)]
+merged_histograms = [{} for _ in range(histogram_numbers)]
 for j, histogram_type in enumerate(type_names):
     for system in systems:
         merged_histograms[j][system] = {}
@@ -80,7 +102,8 @@ for j, histogram_type in enumerate(type_names):
                     histograms_to_merge.append(histograms_dict[process][system][function][histogram_type][i])
                 merged_histograms[j][system][function].append(merge_histograms(histograms_to_merge, weights))
                   
-output_dir = "/home/llr/ilc/hassouna/script2/CalorimeterFluxes/data/ILD/FullSim/energy_histograms/Gev90"
+output_dir = "/home/llr/ilc/hassouna/script2/CalorimeterFluxes/data/ILD/FullSim/energy_histograms/GeV90/merged"
 canvas = ROOT.TCanvas('canvas', 'Histogram', 800, 600)
-            
+# canvas.SetLogy(1)
+
 write_histogram(output_dir, canvas, merged_histograms, systems, system_functions, histograms_to_select)     

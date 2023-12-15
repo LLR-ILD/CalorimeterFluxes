@@ -132,6 +132,16 @@ def get_x_titles(histogram_dictionary, systems):
         histograms_x_titles[system] = x_titles
     return histograms_x_titles
 
+""" A function that reads off the y-axis titles from the histograms.
+"""
+def get_y_titles(histogram_dictionary, systems):
+    histograms_y_titles = OrderedDict()
+    histogram_type_names = histogram_dictionary[systems[0]]["no_function"].keys()
+    for type_name in histogram_type_names:
+        y_title = histogram_dictionary[systems[0]]["no_function"][type_name][0].GetYaxis().GetTitle() # The y-axis titles are the same for all the selections, all the systems and all the functions. 
+        histograms_y_titles[type_name] = y_title
+    return histograms_y_titles
+
 """ A function to decode the histograms selections from their names.
     The decoding depends on how the histograms are  named according to histograms_for_functions and merge_histograms in histograms_library.py.
 """
@@ -274,7 +284,8 @@ def all_histograms(histogram_dictionary, histograms_x_titles, histogram_selectio
 
 ##################################################################################################################################################
 
-def saving_histogram(histogram_list, save_dir, histo_type, canvas):
+def saving_histogram(histogram_list, save_dir, histograms_y_titles, histo_type, canvas, log=False):
+    if log: canvas.SetLogz(1) # A flag that changes the scale to logarithmic if needed
     for histogram in histogram_list:
         histogram.SetStats(0)  # Remove the statistics box
         histogram.Draw("COLZ")
@@ -282,44 +293,74 @@ def saving_histogram(histogram_list, save_dir, histo_type, canvas):
 
         palette = histogram.GetListOfFunctions().FindObject("palette")
         if palette:
-            palette.GetAxis().SetTitle(histo_type)
-            canvas.Modified()  # Mark the canvas as modified
-            canvas.Update()  
-        
+            x1 = palette.GetX1NDC()
+            y1 = palette.GetY1NDC()
+            x2 = palette.GetX2NDC()
+            y2 = palette.GetY2NDC()
+
+            # Create a TLatex object for the title
+            latex = ROOT.TLatex()
+            latex.SetTextSize(0.03)
+            latex.SetTextAlign(33)  # Horizontal center and vertical top
+            latex.SetTextFont(42)
+
+            # Position the title above or to the right of the color palette
+            title_x = x2 + 0.02  # Adjust as needed
+            title_y = y2 + 0.05  # Centered vertically on the palette
+            latex.DrawLatexNDC(title_x, title_y, histograms_y_titles[histo_type])
+
+        canvas.Modified()  # Apply the modifications
+        canvas.Update()  # Update the canvas again to reflect the changes
         canvas.SaveAs("{}/{}{}".format(save_dir, histogram.GetName(), ".pdf"))
         histogram.Write()
         histogram.Delete()
 
-def write_histograms(twoD_histograms, histogram_selection_dictionary, dir, canvas):
+def write_histograms(twoD_histograms, histogram_selection_dictionary, histograms_y_titles, dir, canvas, log=False):
     if not os.path.exists(dir):os.makedirs(dir)
     myfile = ROOT.TFile(dir + '/all.root', 'UPDATE')
     for system in twoD_histograms.keys():
-        sys_dir_root = myfile.mkdir(system)
+        if not myfile.GetDirectory(system): # Check if the directory exists
+            sys_dir_root = myfile.mkdir(system) # If the directory does not exist, create it
+        else:
+            sys_dir_root = myfile.GetDirectory(system) # If it exists, retrieve the existing directory
         if sys_dir_root is None: print("Failed to create directory: {}".format(system))
         sys_dir = "{}/{}".format(dir, system)
         if not os.path.exists(sys_dir): os.makedirs(sys_dir)
         for function in twoD_histograms[system].keys():
-            func_dir_root = sys_dir_root.mkdir(function)
+            if not sys_dir_root.GetDirectory(function): # Check if the directory exists
+                func_dir_root = sys_dir_root.mkdir(function) # If the directory does not exist, create it
+            else:
+                func_dir_root = sys_dir_root.GetDirectory(function) # If it exists, retrieve the existing directory
+            if func_dir_root is None: print("Failed to create directory: {}:{}".format(system, function))
             func_dir = "{}/{}".format(sys_dir, function)
             if not os.path.exists(func_dir): os.makedirs(func_dir)
             if function == "no_function" and len(histogram_selection_dictionary[system][function].keys()) != 0 and len(histogram_selection_dictionary[system][function].keys()) != 1:
                 for histo_type in twoD_histograms[system][function].keys():
-                    histo_type_dir_root = func_dir_root.mkdir(histo_type)
+                    if not func_dir_root.GetDirectory(histo_type): # Check if the directory exists
+                        histo_type_dir_root = func_dir_root.mkdir(histo_type) # If the directory does not exist, create it
+                    else:
+                        histo_type_dir_root = func_dir_root.GetDirectory(histo_type) # If it exists, retrieve the existing directory
                     histo_type_dir = "{}/{}".format(func_dir, histo_type)
                     if not os.path.exists(histo_type_dir): os.makedirs(histo_type_dir)
                     for element in twoD_histograms[system][function][histo_type]:
-                        element_dir_root = histo_type_dir_root.mkdir(element)
+                        if not histo_type_dir_root.GetDirectory(element): # Check if the directory exists
+                            element_dir_root = histo_type_dir_root.mkdir(element) # If the directory does not exist, create it
+                        else:
+                            element_dir_root = histo_type_dir_root.GetDirectory(element) # If it exists, retrieve the existing directory
                         element_dir_root.cd()
                         element_dir = "{}/{}".format(histo_type_dir, element)
                         if not os.path.exists(element_dir): os.makedirs(element_dir)
                         histogram_list = twoD_histograms[system][function][histo_type][element]
-                        saving_histogram(histogram_list, element_dir, histo_type, canvas)
+                        saving_histogram(histogram_list, element_dir, histograms_y_titles, histo_type, canvas, log)
             else:
                 for histo_type in twoD_histograms[system][function].keys():
-                    histo_type_dir_root = func_dir_root.mkdir(histo_type)
+                    if not func_dir_root.GetDirectory(histo_type): # Check if the directory exists
+                        histo_type_dir_root = func_dir_root.mkdir(histo_type) # If the directory does not exist, create it
+                    else:
+                        histo_type_dir_root = func_dir_root.GetDirectory(histo_type) # If it exists, retrieve the existing directory                    
                     histo_type_dir_root.cd()
                     histo_type_dir = "{}/{}".format(func_dir, histo_type)
                     if not os.path.exists(histo_type_dir): os.makedirs(histo_type_dir)
                     histogram_list = twoD_histograms[system][function][histo_type] 
-                    saving_histogram(histogram_list, histo_type_dir, histo_type, canvas)
+                    saving_histogram(histogram_list, histo_type_dir, histograms_y_titles, histo_type, canvas, log)
     myfile.Close()

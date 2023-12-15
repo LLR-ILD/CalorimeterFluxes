@@ -278,7 +278,10 @@ def fill_histogram(dictionary_of_system, systems, collections, function_dict, sy
         Nhits = deepcopy(hits_dict)
         for collection_name in collections:
             is_endcap = (collection_name in ring_collections)
-            calo_hits = event.getCollection(collection_name)
+            try:
+                calo_hits = event.getCollection(collection_name)
+            except:
+                continue
             cell_id_encoding = calo_hits.getParameters().getStringVal(EVENT.LCIO.CellIDEncoding)
             id_decoder = UTIL.BitField64(cell_id_encoding)
             for hit in calo_hits:
