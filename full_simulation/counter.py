@@ -4,8 +4,8 @@ import os
 
 path = sys.argv[1]
 process = sys.argv[2]
-skip_events = sys.argv[3]
-total_events = sys.argv[4]
+total_events = sys.argv[3]
+skip_events = sys.argv[4]
 number_processes = sys.argv[5]
 
 def main():

@@ -4,8 +4,8 @@ from pyLCIO.io import LcioReader
 
 path = sys.argv[1]
 process = sys.argv[2]
-skipped_events = int(sys.argv[3])
-total_events = int(sys.argv[4])
+total_events = int(sys.argv[3])
+skipped_events = int(sys.argv[4])
 number_processes = int(sys.argv[5])
 input_path = sys.argv[6]
 

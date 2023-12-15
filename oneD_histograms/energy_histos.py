@@ -44,10 +44,7 @@ dictionary_of_system = {
         "ScHcalBarrel": (["HcalBarrelRegCollection"],                       [["*"],["*"],                 ["*"],                        ["0:15","16:31","32:48"]],  [[1000, 20], [300, 1e-7], [100, 3e-3], [250, 250], [100, 500]], [[3e-4]], {"complex_happy" :["0:29", "30:59", "60:76"]}), 
         "ScHCalECRing": (["HcalEndcapRingCollection"],                      [["*"],["*"],                 ["*"],                        ["*"]],                     [[1000, 20], [300, 1e-7], [100, 3e-3], [250, 250], [100, 500]], [[3e-4]], {})                 
         }
-# systems = dictionary_of_system.keys() # dictionary_of_system.keys() #Retrieve all the systems
-# systems.remove("RPCHCalECRing")
 systems = dictionary_of_system.keys()
-# systems = ["SiECalEndcap", "SiECalRing"]
 collections = list(dict.fromkeys(list(chain(*[dictionary_of_system[system][0] for system in systems])))) #Retrieve all the collections
 system_functions = {} #Retrieve all the functions per systems
 histograms_to_select = {}
