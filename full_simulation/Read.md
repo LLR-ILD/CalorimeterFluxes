@@ -42,4 +42,4 @@ __Step 4:__ Producing the complementary files.  <br>
 If no problems happened and the cross-chekc produced the expected results, you are done. If not, you need to produce the complementary files. Run the ```complementary_simulation.py``` script with exactly the same arguments as counter.py but with the additional argument at the end (6th argument) of the parent directory of the ```.stdhep``` file (argument 1 in step 2).
 
 __Step 5:__ Cross-cheking.  <br>
-Cross check using ```counter_total.py``` script. Run it using exactly the same arguments as ```counter.py``` but with an additional argument (6th argument): events_number_per_process. This script will give you a list of the total events of the initially ```.slcio``` files added with their complementary counterparts produced in step 4. 
+Cross check using ```counter_total.py``` script. Run it using exactly the same arguments as ```counter.py```. This script will give you a list of the total events of the initially ```.slcio``` files added with their complementary counterparts produced in step 4. 
