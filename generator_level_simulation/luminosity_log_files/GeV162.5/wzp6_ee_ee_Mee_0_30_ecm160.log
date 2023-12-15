@@ -1,0 +1,469 @@
+/eos/user/k/kmekhema/jobs/wzp6_ee_ee_Mee_0_30_ecm160/job159268630_wzp6_ee_ee_Mee_0_30_ecm160
+AlmaLinux/RHEL 9 detected
+Setting up the latest Key4HEP software stack from CVMFS ...
+ ...  Key4HEP release: 2023-11-30
+ ...  Use the following command to reproduce the current environment: 
+ ... 
+         source /cvmfs/sw.hsf.org/key4hep/releases/2023-11-23/x86_64-almalinux9-gcc11.3.1-opt/key4hep-stack/2023-11-30-gyuooo/setup.sh
+ ... 
+ ...  If you have any issues, comments or requests, open an issue at https://github.com/key4hep/key4hep-spack/issues
+------------GOOD COPY
+| Writing log to 'whizard.log'
+|=============================================================================|
+|                                                                             |
+|    WW             WW  WW   WW  WW  WWWWWW      WW      WWWWW    WWWW        |
+|     WW    WW     WW   WW   WW  WW     WW      WWWW     WW  WW   WW  WW      |
+|      WW  WW WW  WW    WWWWWWW  WW    WW      WW  WW    WWWWW    WW   WW     |
+|       WWWW   WWWW     WW   WW  WW   WW      WWWWWWWW   WW  WW   WW  WW      |
+|        WW     WW      WW   WW  WW  WWWWWW  WW      WW  WW   WW  WWWW        |
+|                                                                             |
+|                                                                             |
+|                                        W                                    |
+|                                       sW                                    |
+|                                       WW                                    |
+|                                      sWW                                    |
+|                                      WWW                                    |
+|                                     wWWW                                    |
+|                                    wWWWW                                    |
+|                                    WW WW                                    |
+|                                    WW WW                                    |
+|                                   wWW WW                                    |
+|                                  wWW  WW                                    |
+|                                  WW   WW                                    |
+|                                  WW   WW                                    |
+|                                 WW    WW                                    |
+|                                 WW    WW                                    |
+|                                WW     WW                                    |
+|                                WW     WW                                    |
+|           wwwwww              WW      WW                                    |
+|              WWWWWww          WW      WW                                    |
+|                 WWWWWwwwww   WW       WW                                    |
+|                     wWWWwwwwwWW       WW                                    |
+|                 wWWWWWWWWWWwWWW       WW                                    |
+|                wWWWWW       wW        WWWWWWW                               |
+|                  WWWW       wW        WW  wWWWWWWWwww                       |
+|                   WWWW                      wWWWWWWWwwww                    |
+|                     WWWW                      WWWW     WWw                  |
+|                       WWWWww                   WWWW                         |
+|                           WWWwwww              WWWW                         |
+|                               wWWWWwww       wWWWWW                         |
+|                                     WwwwwwwwwWWW                            |
+|                                                                             |
+|                                                                             |
+|                                                                             |
+|  by:   Wolfgang Kilian, Thorsten Ohl, Juergen Reuter                        |
+|        with contributions from Christian Speckner                           |
+|        Contact: <whizard@desy.de>                                           |
+|                                                                             |
+|  if you use WHIZARD please cite:                                            |
+|        W. Kilian, T. Ohl, J. Reuter,  Eur.Phys.J.C71 (2011) 1742            |
+|                                          [arXiv: 0708.4233 [hep-ph]]        |
+|        M. Moretti, T. Ohl, J. Reuter, arXiv: hep-ph/0102195                 |
+|                                                                             |
+|=============================================================================|
+|                               WHIZARD 3.1.2
+|=============================================================================|
+| Reading model file '/cvmfs/sw.hsf.org/key4hep/releases/2023-11-23/x86_64-almalinux9-gcc11.3.1-opt/whizard/3.1.2-fw2eiz/share/whizard/models/SM.mdl'
+| Preloaded model: SM
+| Process library 'default_lib': initialized
+| Preloaded library: default_lib
+| Reading model file '/cvmfs/sw.hsf.org/key4hep/releases/2023-11-23/x86_64-almalinux9-gcc11.3.1-opt/whizard/3.1.2-fw2eiz/share/whizard/models/SM_hadrons.mdl'
+| Reading commands from file 'card.sin'
+n_events = 10000
+seed = 159268630
+| Switching to model 'SM', scheme 'default'
+SM.mH =>  1.250000000000E+02
+sqrts =  1.625000000000E+02
+SM.ms =>  0.000000000000E+00
+| Process library 'default_lib': recorded process 'proc'
+?keep_beams = true
+?keep_remnants = true
+gaussian_spread1 =  8.900000000000E-04
+gaussian_spread2 =  8.900000000000E-04
+?isr_handler = true
+$isr_handler_mode = "recoil"
+isr_alpha =  7.299300000000E-03
+isr_mass =  5.110000000000E-04
+?ps_fsr_active = true
+?ps_isr_active = false
+?hadronization_active = true
+$shower_method = "PYTHIA6"
+$ps_PYTHIA_PYGIVE = "MSTJ(28)=0; PMAS(25,1)=125.1; PMAS(25,2)=0.4143E-02; MSTJ(41)=2; MSTU(22)=2000; PARJ(21)=0.40000; PARJ(41)=0.11000; PARJ(42)=0.52000; PARJ(81)=0.25000; PARJ(82)=1.90000; MSTJ(11)=3; PARJ(54)=-0.03100; PARJ(55)=-0.00200; PARJ(1)=0.08500; PARJ(3)=0.45000; PARJ(4)=0.02500; PARJ(2)=0.31000; PARJ(11)=0.60000; PARJ(12)=0.40000; PARJ(13)=0.72000; PARJ(14)=0.43000; PARJ(15)=0.08000; PARJ(16)=0.08000; PARJ(17)=0.17000; MSTP(3)=1;MSTP(71)=1;  MSTP(151)=1; PARP(151)=0.0098; PARP(152)=2.54e-5; PARP(153)=0.646; PARP(154)=1.937; MSTJ(22)=4; PARJ(73)=2250; PARJ(74)=2500"
+| Integrate: current process library needs compilation
+| Process library 'default_lib': compiling ...
+| Process library 'default_lib': writing makefile
+| Process library 'default_lib': writing driver
+| Process library 'default_lib': creating source code
+  RM        proc_i1.f90,.mod,.lo
+  OMEGA     proc_i1.f90
+[1/1] e- e+ -> e- e+ ... allowed. [time: 0.23 secs, total: 0.23 secs, remaining: 0.00 secs]
+all processes done. [total time: 0.23 secs]
+SUMMARY: 12 fusions, 4 propagators, 4 diagrams
+SUMMARY: 4 vertices
+| Process library 'default_lib': compiling sources
+  FC        default_lib.lo
+| Process library 'default_lib': linking
+  FCLD      default_lib.la
+| Process library 'default_lib': loading
+| Process library 'default_lib': ... success.
+| Integrate: compilation done
+| RNG: Initializing TAO random-number generator
+| RNG: Setting seed for random-number generator to 16150
+| Initializing integration for process proc:
+| Beam structure: e-, e+ => gaussian => isr
+| Beam data (collision):
+|   e-  (mass = 5.1099700E-04 GeV)
+|   e+  (mass = 5.1099700E-04 GeV)
+|   sqrts = 1.625000000000E+02 GeV
+| RNG: Initializing TAO random-number generator
+| RNG: Setting seed for random-number generator to 16151
+| Phase space: generating configuration ...
+| Phase space: ... success.
+| Phase space: writing configuration file 'proc.i1.phs'
+| ------------------------------------------------------------------------
+| Process [scattering]: 'proc'
+|   Library name  = 'default_lib'
+|   Process index = 1
+|   Process components:
+|     1: 'proc_i1':   e-, e+ => e-, e+ [omega]
+| ------------------------------------------------------------------------
+| Phase space: 4 channels, 2 dimensions
+| Phase space: found 4 channels, collected in 3 groves.
+| Phase space: Using 4 equivalences between channels.
+| Phase space: wood
+| Beam structure: gaussian => isr, none => none, isr
+| Beam structure: 2 channels, 2 dimensions
+| Applying user-defined cuts.
+| Starting integration for process 'proc'
+| Integrate: iterations = 10:100000:"gw", 5:200000:""
+| Integrator: 3 chains, 4 channels, 4 dimensions
+| Integrator: Using VAMP channel equivalences
+| Integrator: 100000 initial calls, 20 bins, stratified = T
+| Integrator: VAMP
+|=============================================================================|
+| It      Calls  Integral[fb]  Error[fb]   Err[%]    Acc  Eff[%]   Chi2 N[It] |
+|=============================================================================|
+   1      80000  1.2710296E+04  8.21E+03   64.57  182.62*   0.01
+   2      86255  7.0546866E+03  1.30E+03   18.46   54.21*   0.02
+   3      85244  1.5248266E+04  3.83E+03   25.15   73.42    0.01
+   4      82840  2.2844549E+04  9.86E+03   43.16  124.21    0.01
+   5      96180  1.4623170E+04  1.45E+03    9.90   30.71*   0.03
+   6      83618  1.5915986E+04  1.13E+03    7.10   20.54*   0.06
+   7      79372  1.9976097E+04  2.00E+03   10.00   28.19    0.03
+   8      85649  2.5537546E+04  4.56E+03   17.85   52.24    0.02
+   9      84207  3.4920149E+04  1.20E+04   34.33   99.62    0.01
+  10      83003  2.4739259E+04  4.86E+03   19.64   56.58*   0.02
+|-----------------------------------------------------------------------------|
+  10     846368  1.4222218E+04  6.61E+02    4.65   42.75    0.02    6.18  10
+|-----------------------------------------------------------------------------|
+  11     197815  2.2223648E+04  1.38E+03    6.22   27.68*   0.02
+  12     197815  1.9559235E+04  1.06E+03    5.44   24.17*   0.02
+  13     197815  3.7296633E+04  1.20E+04   32.30  143.67    0.00
+  14     197815  3.4006788E+04  1.08E+04   31.78  141.34*   0.00
+  15     197815  2.7389252E+04  5.64E+03   20.58   91.52*   0.00
+|-----------------------------------------------------------------------------|
+  15     989075  2.0855459E+04  8.29E+02    3.98   39.54    0.00    1.79   5
+|=============================================================================|
+| Time estimate for generating 10000 events: 0d:02h:42m:23s
+$extension_stdhep = "stdhep"
+checkpoint = 100
+| Starting simulation for process 'proc'
+| Simulate: using integration grids from file 'proc.m1.vg'
+| Simulate: activating ISR handler
+| Simulate: ISR/EPA handler mode: pair recoil
+| Simulate: activating parton shower
+     MSTU(12)       changed from              0 to          12345
+| Shower: Using PYTHIA6 shower
+| Simulate: activating hadronization
+| Hadronization: Using PYTHIA6 interface for hadronization and decays
+| RNG: Initializing TAO random-number generator
+| RNG: Setting seed for random-number generator to 16152
+| Simulation: requested number of events = 10000
+|             corr. to luminosity [fb-1] =   4.7949E-01
+| Events: writing to STDHEP file 'proc.stdhep'
+| Events: writing to raw file 'proc.evx'
+| Events: generating 10000 unweighted, unpolarized events ...
+| Events: event normalization mode '1'
+1****************** PYINIT: initialization of PYTHIA routines *****************
+
+ ==============================================================================
+ I                                                                            I
+ I         PYTHIA will be initialized for e- on e+ user configuration         I
+ I            with     81.250 GeV on     81.250 GeV beam energies             I
+ I                                                                            I
+ I           corresponding to    162.500 GeV center-of-mass energy            I
+ I                                                                            I
+ ==============================================================================
+
+ ******** PYMAXI: summary of differential cross-section maximum search ********
+
+           ==========================================================
+           I                                      I                 I
+           I  ISUB  Subprocess name               I  Maximum value  I
+           I                                      I                 I
+           ==========================================================
+           I                                      I                 I
+           I    4   User process 1                I    1.0000D-12   I
+           I                                      I                 I
+           ==========================================================
+
+ ********************** PYINIT: initialization completed **********************
+| 
+| |===================================================================|
+| | % complete | events generated | events remaining | time remaining
+| |===================================================================|
+|      0.0               0              10000              ???
+|      1.0             100               9900              179m:42s
+|      2.0             200               9800              163m:48s
+|      3.0             300               9700              165m:10s
+|      4.0             400               9600              161m:06s
+|      5.0             500               9500              159m:05s
+/eos/user/k/kmekhema/jobs/wzp6_ee_ee_Mee_0_30_ecm160/job052195323_wzp6_ee_ee_Mee_0_30_ecm160
+AlmaLinux/RHEL 9 detected
+Setting up the latest Key4HEP software stack from CVMFS ...
+ ...  Key4HEP release: 2023-11-30
+ ...  Use the following command to reproduce the current environment: 
+ ... 
+         source /cvmfs/sw.hsf.org/key4hep/releases/2023-11-23/x86_64-almalinux9-gcc11.3.1-opt/key4hep-stack/2023-11-30-gyuooo/setup.sh
+ ... 
+ ...  If you have any issues, comments or requests, open an issue at https://github.com/key4hep/key4hep-spack/issues
+------------GOOD COPY
+| Writing log to 'whizard.log'
+|=============================================================================|
+|                                                                             |
+|    WW             WW  WW   WW  WW  WWWWWW      WW      WWWWW    WWWW        |
+|     WW    WW     WW   WW   WW  WW     WW      WWWW     WW  WW   WW  WW      |
+|      WW  WW WW  WW    WWWWWWW  WW    WW      WW  WW    WWWWW    WW   WW     |
+|       WWWW   WWWW     WW   WW  WW   WW      WWWWWWWW   WW  WW   WW  WW      |
+|        WW     WW      WW   WW  WW  WWWWWW  WW      WW  WW   WW  WWWW        |
+|                                                                             |
+|                                                                             |
+|                                        W                                    |
+|                                       sW                                    |
+|                                       WW                                    |
+|                                      sWW                                    |
+|                                      WWW                                    |
+|                                     wWWW                                    |
+|                                    wWWWW                                    |
+|                                    WW WW                                    |
+|                                    WW WW                                    |
+|                                   wWW WW                                    |
+|                                  wWW  WW                                    |
+|                                  WW   WW                                    |
+|                                  WW   WW                                    |
+|                                 WW    WW                                    |
+|                                 WW    WW                                    |
+|                                WW     WW                                    |
+|                                WW     WW                                    |
+|           wwwwww              WW      WW                                    |
+|              WWWWWww          WW      WW                                    |
+|                 WWWWWwwwww   WW       WW                                    |
+|                     wWWWwwwwwWW       WW                                    |
+|                 wWWWWWWWWWWwWWW       WW                                    |
+|                wWWWWW       wW        WWWWWWW                               |
+|                  WWWW       wW        WW  wWWWWWWWwww                       |
+|                   WWWW                      wWWWWWWWwwww                    |
+|                     WWWW                      WWWW     WWw                  |
+|                       WWWWww                   WWWW                         |
+|                           WWWwwww              WWWW                         |
+|                               wWWWWwww       wWWWWW                         |
+|                                     WwwwwwwwwWWW                            |
+|                                                                             |
+|                                                                             |
+|                                                                             |
+|  by:   Wolfgang Kilian, Thorsten Ohl, Juergen Reuter                        |
+|        with contributions from Christian Speckner                           |
+|        Contact: <whizard@desy.de>                                           |
+|                                                                             |
+|  if you use WHIZARD please cite:                                            |
+|        W. Kilian, T. Ohl, J. Reuter,  Eur.Phys.J.C71 (2011) 1742            |
+|                                          [arXiv: 0708.4233 [hep-ph]]        |
+|        M. Moretti, T. Ohl, J. Reuter, arXiv: hep-ph/0102195                 |
+|                                                                             |
+|=============================================================================|
+|                               WHIZARD 3.1.2
+|=============================================================================|
+| Reading model file '/cvmfs/sw.hsf.org/key4hep/releases/2023-11-23/x86_64-almalinux9-gcc11.3.1-opt/whizard/3.1.2-fw2eiz/share/whizard/models/SM.mdl'
+| Preloaded model: SM
+| Process library 'default_lib': initialized
+| Preloaded library: default_lib
+| Reading model file '/cvmfs/sw.hsf.org/key4hep/releases/2023-11-23/x86_64-almalinux9-gcc11.3.1-opt/whizard/3.1.2-fw2eiz/share/whizard/models/SM_hadrons.mdl'
+| Reading commands from file 'card.sin'
+n_events = 1
+seed = 52195323
+| Switching to model 'SM', scheme 'default'
+SM.mH =>  1.250000000000E+02
+sqrts =  1.625000000000E+02
+SM.ms =>  0.000000000000E+00
+| Process library 'default_lib': recorded process 'proc'
+?keep_beams = true
+?keep_remnants = true
+gaussian_spread1 =  8.900000000000E-04
+gaussian_spread2 =  8.900000000000E-04
+?isr_handler = true
+$isr_handler_mode = "recoil"
+isr_alpha =  7.299300000000E-03
+isr_mass =  5.110000000000E-04
+?ps_fsr_active = true
+?ps_isr_active = false
+?hadronization_active = true
+$shower_method = "PYTHIA6"
+$ps_PYTHIA_PYGIVE = "MSTJ(28)=0; PMAS(25,1)=125.1; PMAS(25,2)=0.4143E-02; MSTJ(41)=2; MSTU(22)=2000; PARJ(21)=0.40000; PARJ(41)=0.11000; PARJ(42)=0.52000; PARJ(81)=0.25000; PARJ(82)=1.90000; MSTJ(11)=3; PARJ(54)=-0.03100; PARJ(55)=-0.00200; PARJ(1)=0.08500; PARJ(3)=0.45000; PARJ(4)=0.02500; PARJ(2)=0.31000; PARJ(11)=0.60000; PARJ(12)=0.40000; PARJ(13)=0.72000; PARJ(14)=0.43000; PARJ(15)=0.08000; PARJ(16)=0.08000; PARJ(17)=0.17000; MSTP(3)=1;MSTP(71)=1;  MSTP(151)=1; PARP(151)=0.0098; PARP(152)=2.54e-5; PARP(153)=0.646; PARP(154)=1.937; MSTJ(22)=4; PARJ(73)=2250; PARJ(74)=2500"
+| Integrate: current process library needs compilation
+| Process library 'default_lib': compiling ...
+| Process library 'default_lib': writing makefile
+| Process library 'default_lib': writing driver
+| Process library 'default_lib': creating source code
+  RM        proc_i1.f90,.mod,.lo
+  OMEGA     proc_i1.f90
+[1/1] e- e+ -> e- e+ ... allowed. [time: 0.22 secs, total: 0.22 secs, remaining: 0.00 secs]
+all processes done. [total time: 0.22 secs]
+SUMMARY: 12 fusions, 4 propagators, 4 diagrams
+SUMMARY: 4 vertices
+| Process library 'default_lib': compiling sources
+  FC        default_lib.lo
+| Process library 'default_lib': linking
+  FCLD      default_lib.la
+| Process library 'default_lib': loading
+| Process library 'default_lib': ... success.
+| Integrate: compilation done
+| RNG: Initializing TAO random-number generator
+| RNG: Setting seed for random-number generator to 28667
+| Initializing integration for process proc:
+| Beam structure: e-, e+ => gaussian => isr
+| Beam data (collision):
+|   e-  (mass = 5.1099700E-04 GeV)
+|   e+  (mass = 5.1099700E-04 GeV)
+|   sqrts = 1.625000000000E+02 GeV
+| RNG: Initializing TAO random-number generator
+| RNG: Setting seed for random-number generator to 28668
+| Phase space: generating configuration ...
+| Phase space: ... success.
+| Phase space: writing configuration file 'proc.i1.phs'
+| ------------------------------------------------------------------------
+| Process [scattering]: 'proc'
+|   Library name  = 'default_lib'
+|   Process index = 1
+|   Process components:
+|     1: 'proc_i1':   e-, e+ => e-, e+ [omega]
+| ------------------------------------------------------------------------
+| Phase space: 4 channels, 2 dimensions
+| Phase space: found 4 channels, collected in 3 groves.
+| Phase space: Using 4 equivalences between channels.
+| Phase space: wood
+| Beam structure: gaussian => isr, none => none, isr
+| Beam structure: 2 channels, 2 dimensions
+| Applying user-defined cuts.
+| Starting integration for process 'proc'
+| Integrate: iterations = 10:100000:"gw", 5:200000:""
+| Integrator: 3 chains, 4 channels, 4 dimensions
+| Integrator: Using VAMP channel equivalences
+| Integrator: 100000 initial calls, 20 bins, stratified = T
+| Integrator: VAMP
+|=============================================================================|
+| It      Calls  Integral[fb]  Error[fb]   Err[%]    Acc  Eff[%]   Chi2 N[It] |
+|=============================================================================|
+   1      80000  1.4984729E+03  2.84E+02   18.94   53.56*   0.02
+   2      77451  6.6315936E+03  2.32E+03   35.03   97.49    0.02
+   3      82515  1.0469814E+04  2.45E+03   23.45   67.35*   0.02
+   4      98382  1.3877345E+04  1.67E+03   12.00   37.64*   0.03
+   5      81090  1.6379707E+04  1.91E+03   11.64   33.14*   0.02
+   6      82627  1.6126567E+04  1.51E+03    9.37   26.93*   0.03
+   7      85552  1.7026802E+04  1.02E+03    5.98   17.49*   0.05
+   8      87671  2.4434347E+04  3.18E+03   13.01   38.52    0.03
+   9      85480  2.0009211E+04  1.53E+03    7.65   22.38*   0.03
+  10      88150  1.9560017E+04  7.27E+02    3.72   11.04*   0.09
+|-----------------------------------------------------------------------------|
+  10     848918  5.9511384E+03  2.41E+02    4.05   37.31    0.09  103.79  10
+|-----------------------------------------------------------------------------|
+  11     197935  3.1676000E+04  5.76E+03   18.18   80.89    0.01
+  12     197935  2.3106944E+04  1.58E+03    6.85   30.48*   0.00
+  13     197935  2.4358094E+04  1.75E+03    7.18   31.94    0.00
+  14     197935  2.3338402E+04  2.43E+03   10.40   46.29    0.00
+|      6.0             600               9400              158m:54s
+  15     197935  3.1676127E+04  7.80E+03   24.63  109.56    0.00
+|-----------------------------------------------------------------------------|
+  15     989675  2.4006543E+04  1.03E+03    4.29   42.69    0.00    0.79   5
+|=============================================================================|
+| Time estimate for generating 10000 events: 0d:01h:06m:38s
+$extension_stdhep = "stdhep"
+checkpoint = 100
+| Starting simulation for process 'proc'
+| Simulate: using integration grids from file 'proc.m1.vg'
+| Simulate: activating ISR handler
+| Simulate: ISR/EPA handler mode: pair recoil
+| Simulate: activating parton shower
+     MSTU(12)       changed from              0 to          12345
+| Shower: Using PYTHIA6 shower
+| Simulate: activating hadronization
+| Hadronization: Using PYTHIA6 interface for hadronization and decays
+| RNG: Initializing TAO random-number generator
+| RNG: Setting seed for random-number generator to 28669
+| Simulation: requested number of events = 1
+|             corr. to luminosity [fb-1] =   4.1655E-05
+| Events: writing to STDHEP file 'proc.stdhep'
+| Events: writing to raw file 'proc.evx'
+| Events: generating 1 unweighted, unpolarized events ...
+| Events: event normalization mode '1'
+1****************** PYINIT: initialization of PYTHIA routines *****************
+
+ ==============================================================================
+ I                                                                            I
+ I         PYTHIA will be initialized for e- on e+ user configuration         I
+ I            with     81.250 GeV on     81.250 GeV beam energies             I
+ I                                                                            I
+ I           corresponding to    162.500 GeV center-of-mass energy            I
+ I                                                                            I
+ ==============================================================================
+
+ ******** PYMAXI: summary of differential cross-section maximum search ********
+
+           ==========================================================
+           I                                      I                 I
+           I  ISUB  Subprocess name               I  Maximum value  I
+           I                                      I                 I
+           ==========================================================
+           I                                      I                 I
+           I    4   User process 1                I    1.0000D-12   I
+           I                                      I                 I
+           ==========================================================
+
+ ********************** PYINIT: initialization completed **********************
+| 
+| |===================================================================|
+| | % complete | events generated | events remaining | time remaining
+| |===================================================================|
+|      0.0               0                  1              ???
+|    100.0               1                  0              0m:00s
+| |===================================================================|
+| 
+|         ... event sample complete.
+| Events: actual unweighting efficiency =   0.00 %
+| Events: closing STDHEP file 'proc.stdhep'
+| Events: closing raw file 'proc.evx'
+| WHIZARD run finished.
+|=============================================================================|
+
+
+          ********************************************************
+          *       STDHEP version 5.06.01 -  November 20, 2007    *
+          ********************************************************
+
+
+ STDXWOPEN WARNING: I/O is initialized for stdhep only
+
+          STDXEND:        575 words i/o with    10260 efficiency 
+finished run
+------------GOOD COPY
+stdhep.gz file successfully copied on eos
+import FCC-ee config
+version  winter2023
+yamldir =  /afs/cern.ch/work/f/fccsw/public/FCCDicts/yaml/FCCee/stdhep/winter2023/
+indir = /eos/user/k/kmekhema/whizard_products/stdhep/winter2023/
+sending jobs
+run locally
+preparing to send Whizard jobs to produce stdhep files for process wzp6_ee_ee_Mee_0_30_ecm160
+njobs= 1
+stdhepdir = /eos/user/k/kmekhema/whizard_products/stdhep/winter2023/wzp6_ee_ee_Mee_0_30_ecm160
+will run locally
+succesfully sent 1  job(s)

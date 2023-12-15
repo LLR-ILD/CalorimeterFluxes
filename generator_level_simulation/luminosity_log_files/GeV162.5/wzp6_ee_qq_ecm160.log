@@ -1,0 +1,484 @@
+import FCC-ee config
+('version ', 'winter2023')
+('yamldir = ', '/afs/cern.ch/work/f/fccsw/public/FCCDicts/yaml/FCCee/stdhep/winter2023/')
+('indir =', '/afs/cern.ch/user/k/kmekhema/whizard_products/stdhep/winter2023/')
+/afs/cern.ch/user/k/kmekhema/jobs/wzp6_ee_qq_ecm160/job048019418_wzp6_ee_qq_ecm160
+Setting up the latest Key4HEP software stack from CVMFS ...
+ ...  Key4HEP release: key4hep-stack/2023-04-08
+ ... Use the following command to reproduce the current environment: 
+ ... 
+         source /cvmfs/sw.hsf.org/spackages7/key4hep-stack/2023-04-08/x86_64-centos7-gcc11.2.0-opt/urwcv/setup.sh
+ ... 
+ ... done. 
+------------GOOD COPY
+| Writing log to 'whizard.log'
+|=============================================================================|
+|                                                                             |
+|    WW             WW  WW   WW  WW  WWWWWW      WW      WWWWW    WWWW        |
+|     WW    WW     WW   WW   WW  WW     WW      WWWW     WW  WW   WW  WW      |
+|      WW  WW WW  WW    WWWWWWW  WW    WW      WW  WW    WWWWW    WW   WW     |
+|       WWWW   WWWW     WW   WW  WW   WW      WWWWWWWW   WW  WW   WW  WW      |
+|        WW     WW      WW   WW  WW  WWWWWW  WW      WW  WW   WW  WWWW        |
+|                                                                             |
+|                                                                             |
+|                                        W                                    |
+|                                       sW                                    |
+|                                       WW                                    |
+|                                      sWW                                    |
+|                                      WWW                                    |
+|                                     wWWW                                    |
+|                                    wWWWW                                    |
+|                                    WW WW                                    |
+|                                    WW WW                                    |
+|                                   wWW WW                                    |
+|                                  wWW  WW                                    |
+|                                  WW   WW                                    |
+|                                  WW   WW                                    |
+|                                 WW    WW                                    |
+|                                 WW    WW                                    |
+|                                WW     WW                                    |
+|                                WW     WW                                    |
+|           wwwwww              WW      WW                                    |
+|              WWWWWww          WW      WW                                    |
+|                 WWWWWwwwww   WW       WW                                    |
+|                     wWWWwwwwwWW       WW                                    |
+|                 wWWWWWWWWWWwWWW       WW                                    |
+|                wWWWWW       wW        WWWWWWW                               |
+|                  WWWW       wW        WW  wWWWWWWWwww                       |
+|                   WWWW                      wWWWWWWWwwww                    |
+|                     WWWW                      WWWW     WWw                  |
+|                       WWWWww                   WWWW                         |
+|                           WWWwwww              WWWW                         |
+|                               wWWWWwww       wWWWWW                         |
+|                                     WwwwwwwwwWWW                            |
+|                                                                             |
+|                                                                             |
+|                                                                             |
+|  by:   Wolfgang Kilian, Thorsten Ohl, Juergen Reuter                        |
+|        with contributions from Christian Speckner                           |
+|        Contact: <whizard@desy.de>                                           |
+|                                                                             |
+|  if you use WHIZARD please cite:                                            |
+|        W. Kilian, T. Ohl, J. Reuter,  Eur.Phys.J.C71 (2011) 1742            |
+|                                          [arXiv: 0708.4233 [hep-ph]]        |
+|        M. Moretti, T. Ohl, J. Reuter, arXiv: hep-ph/0102195                 |
+|                                                                             |
+|=============================================================================|
+|                               WHIZARD 3.1.0
+|=============================================================================|
+| Reading model file '/cvmfs/sw.hsf.org/spackages7/whizard/3.1.0/x86_64-centos7-gcc11.2.0-opt/z72ic/share/whizard/models/SM.mdl'
+| Preloaded model: SM
+| Process library 'default_lib': initialized
+| Preloaded library: default_lib
+| Reading model file '/cvmfs/sw.hsf.org/spackages7/whizard/3.1.0/x86_64-centos7-gcc11.2.0-opt/z72ic/share/whizard/models/SM_hadrons.mdl'
+| Reading commands from file 'card.sin'
+n_events = 10000
+seed = 48019418
+| Switching to model 'SM', scheme 'default'
+SM.mH =>  1.250000000000E+02
+sqrts =  1.600000000000E+02
+SM.ms =>  0.000000000000E+00
+[user variable] q = PDG(2, 1, 3)
+[user variable] Q = PDG(-2, -1, -3)
+| Process library 'default_lib': recorded process 'proc'
+?keep_beams = true
+?keep_remnants = true
+gaussian_spread1 =  8.900000000000E-04
+gaussian_spread2 =  8.900000000000E-04
+?isr_handler = true
+$isr_handler_mode = "recoil"
+isr_alpha =  7.299300000000E-03
+isr_mass =  5.110000000000E-04
+?ps_fsr_active = true
+?ps_isr_active = false
+?hadronization_active = true
+$shower_method = "PYTHIA6"
+$ps_PYTHIA_PYGIVE = "MSTJ(28)=0; PMAS(25,1)=125.1; PMAS(25,2)=0.4143E-02; MSTJ(41)=2; MSTU(22)=2000; PARJ(21)=0.40000; PARJ(41)=0.11000; PARJ(42)=0.52000; PARJ(81)=0.25000; PARJ(82)=1.90000; MSTJ(11)=3; PARJ(54)=-0.03100; PARJ(55)=-0.00200; PARJ(1)=0.08500; PARJ(3)=0.45000; PARJ(4)=0.02500; PARJ(2)=0.31000; PARJ(11)=0.60000; PARJ(12)=0.40000; PARJ(13)=0.72000; PARJ(14)=0.43000; PARJ(15)=0.08000; PARJ(16)=0.08000; PARJ(17)=0.17000; MSTP(3)=1;MSTP(71)=1;  MSTP(151)=1; PARP(151)=0.0098; PARP(152)=2.54e-5; PARP(153)=0.646; PARP(154)=1.937; MSTJ(22)=4; PARJ(73)=2250; PARJ(74)=2500"
+| Integrate: current process library needs compilation
+| Process library 'default_lib': compiling ...
+| Process library 'default_lib': writing makefile
+| Process library 'default_lib': writing driver
+| Process library 'default_lib': creating source code
+  RM        proc_i1.f90,.mod,.lo
+  RM        proc_i2.f90,.mod,.lo
+  RM        proc_i3.f90,.mod,.lo
+  OMEGA     proc_i1.f90
+[1/3] e- e+ -> s sbar ... allowed. [time: 0.36 secs, total: 1.07 secs, remaining: 0.72 secs]
+[2/3] e- e+ -> d dbar ... allowed. [time: 0.36 secs, total: 1.08 secs, remaining: 0.36 secs]
+[3/3] e- e+ -> u ubar ... allowed. [time: 0.35 secs, total: 1.07 secs, remaining: 0.00 secs]
+all processes done. [total time: 1.07 secs]
+SUMMARY: 6 fusions, 2 propagators, 2 diagrams
+SUMMARY: 6 fusions, 2 propagators, 2 diagrams
+SUMMARY: 6 fusions, 2 propagators, 2 diagrams
+SUMMARY: 6 vertices
+  OMEGA     proc_i2.f90
+[1/1] e- e+ -> c cbar ... allowed. [time: 0.36 secs, total: 0.36 secs, remaining: 0.00 secs]
+all processes done. [total time: 0.37 secs]
+SUMMARY: 6 fusions, 2 propagators, 2 diagrams
+SUMMARY: 4 vertices
+  OMEGA     proc_i3.f90
+[1/1] e- e+ -> b bbar ... allowed. [time: 0.35 secs, total: 0.35 secs, remaining: 0.00 secs]
+all processes done. [total time: 0.35 secs]
+SUMMARY: 6 fusions, 2 propagators, 2 diagrams
+SUMMARY: 4 vertices
+| Process library 'default_lib': compiling sources
+  FC        default_lib.lo
+| Process library 'default_lib': linking
+  FCLD      default_lib.la
+| Process library 'default_lib': loading
+| Process library 'default_lib': ... success.
+| Integrate: compilation done
+| RNG: Initializing TAO random-number generator
+| RNG: Setting seed for random-number generator to 14298
+| Initializing integration for process proc:
+| Beam structure: e-, e+ => gaussian => isr
+| Beam data (collision):
+|   e-  (mass = 5.1099700E-04 GeV)
+|   e+  (mass = 5.1099700E-04 GeV)
+|   sqrts = 1.600000000000E+02 GeV
+| RNG: Initializing TAO random-number generator
+| RNG: Setting seed for random-number generator to 14299
+| Phase space: generating configuration ...
+| Phase space: ... success.
+| Phase space: writing configuration file 'proc.i1.phs'
+| Phase space: generating configuration ...
+| Phase space: ... success.
+| Phase space: writing configuration file 'proc.i2.phs'
+| Phase space: generating configuration ...
+| Phase space: ... success.
+| Phase space: writing configuration file 'proc.i3.phs'
+| ------------------------------------------------------------------------
+| Process [scattering]: 'proc'
+|   Library name  = 'default_lib'
+|   Process index = 1
+|   Process components:
+|     1: 'proc_i1':   e-, e+ => u:d:s, ubar:dbar:sbar [omega]
+|     2: 'proc_i2':   e-, e+ => c, cbar [omega]
+|     3: 'proc_i3':   e-, e+ => b, bbar [omega]
+| ------------------------------------------------------------------------
+| Phase space: 2 channels, 2 dimensions
+| Phase space: found 2 channels, collected in 2 groves.
+| Phase space: Using 2 equivalences between channels.
+| Phase space: wood
+| Phase space: 2 channels, 2 dimensions
+| Phase space: found 2 channels, collected in 2 groves.
+| Phase space: Using 2 equivalences between channels.
+| Phase space: wood
+| Phase space: 2 channels, 2 dimensions
+| Phase space: found 2 channels, collected in 2 groves.
+| Phase space: Using 2 equivalences between channels.
+| Phase space: wood
+| Beam structure: gaussian => isr, none => none, isr
+| Beam structure: 2 channels, 2 dimensions
+Warning: No cuts have been defined.
+| Starting integration for process 'proc' part 1
+| Integrate: iterations = 10:100000:"gw", 5:200000:""
+| Integrator: 2 chains, 2 channels, 4 dimensions
+| Integrator: Using VAMP channel equivalences
+| Integrator: 100000 initial calls, 20 bins, stratified = T
+| Integrator: VAMP
+|=============================================================================|
+| It      Calls  Integral[fb]  Error[fb]   Err[%]    Acc  Eff[%]   Chi2 N[It] |
+|=============================================================================|
+   1      82944  1.0196216E+05  8.01E+03    7.86   22.63*   0.03
+   2      93955  9.1973460E+04  6.91E+02    0.75    2.30*   0.31
+   3      92208  9.2383277E+04  2.31E+02    0.25    0.76*   1.59
+   4      71472  9.4789783E+04  8.28E+02    0.87    2.33    0.45
+   5      92208  9.4116739E+04  2.77E+02    0.29    0.89*   1.77
+   6      81472  9.3666379E+04  2.73E+02    0.29    0.83*   4.35
+   7      82944  9.4060429E+04  1.97E+02    0.21    0.60*   2.80
+   8      82944  9.4187015E+04  2.39E+02    0.25    0.73    1.98
+   9      82944  9.4562027E+04  1.83E+02    0.19    0.56*   4.62
+  10      82944  9.4227885E+04  3.11E+02    0.33    0.95    0.85
+|-----------------------------------------------------------------------------|
+  10     846035  9.3908144E+04  8.70E+01    0.09    0.85    0.85    7.84  10
+|-----------------------------------------------------------------------------|
+  11     197568  9.4149433E+04  9.28E+01    0.10    0.44*   3.97
+  12     197568  9.5107113E+04  5.50E+02    0.58    2.57    0.16
+  13     197568  9.4345374E+04  2.81E+02    0.30    1.32*   0.16
+  14     197568  9.5125461E+04  7.29E+02    0.77    3.40    0.08
+  15     197568  9.5407159E+04  1.34E+03    1.41    6.26    0.06
+|-----------------------------------------------------------------------------|
+  15     987840  9.4210234E+04  8.62E+01    0.09    0.91    0.06    1.42   5
+|=============================================================================|
+| Time estimate for generating 10000 events: 0d:00h:14m:40s
+| Starting integration for process 'proc' part 2
+| Integrate: iterations = 10:100000:"gw", 5:200000:""
+| Integrator: 2 chains, 2 channels, 4 dimensions
+| Integrator: Using VAMP channel equivalences
+| Integrator: 100000 initial calls, 20 bins, stratified = T
+| Integrator: VAMP
+|=============================================================================|
+| It      Calls  Integral[fb]  Error[fb]   Err[%]    Acc  Eff[%]   Chi2 N[It] |
+|=============================================================================|
+   1      82944  2.9554844E+04  1.41E+02    0.48    1.37*   0.56
+   2      82944  2.9966253E+04  1.20E+02    0.40    1.16*   1.29
+   3      82944  2.9953582E+04  6.69E+01    0.22    0.64*   3.61
+   4      82944  2.9933706E+04  5.71E+01    0.19    0.55*   5.70
+   5      82944  3.0048045E+04  4.73E+01    0.16    0.45*   5.85
+   6      71472  2.9986952E+04  4.40E+01    0.15    0.39*  10.97
+   7      71472  2.9989877E+04  4.09E+01    0.14    0.36*  10.50
+   8      92208  3.0050716E+04  3.53E+01    0.12    0.36*  16.19
+   9      92208  3.0002986E+04  3.41E+01    0.11    0.35*  10.64
+  10      92208  2.9952359E+04  3.50E+01    0.12    0.35   14.83
+|-----------------------------------------------------------------------------|
+  10     834288  2.9990960E+04  1.46E+01    0.05    0.44   14.83    1.85  10
+|-----------------------------------------------------------------------------|
+  11     197784  3.0029220E+04  2.10E+01    0.07    0.31*  14.09
+  12     197784  3.0004111E+04  2.10E+01    0.07    0.31*  13.61
+  13     197784  2.9978926E+04  2.08E+01    0.07    0.31*  13.54
+  14     197784  2.9983492E+04  2.09E+01    0.07    0.31   13.49
+  15     197784  2.9999826E+04  2.10E+01    0.07    0.31   13.50
+|-----------------------------------------------------------------------------|
+  15     988920  2.9998974E+04  9.36E+00    0.03    0.31   13.50    0.90   5
+|=============================================================================|
+| Time estimate for generating 10000 events: 0d:00h:00m:04s
+| Starting integration for process 'proc' part 3
+| Integrate: iterations = 10:100000:"gw", 5:200000:""
+| Integrator: 2 chains, 2 channels, 4 dimensions
+| Integrator: Using VAMP channel equivalences
+| Integrator: 100000 initial calls, 20 bins, stratified = T
+| Integrator: VAMP
+|=============================================================================|
+| It      Calls  Integral[fb]  Error[fb]   Err[%]    Acc  Eff[%]   Chi2 N[It] |
+|=============================================================================|
+   1      82944  3.0365375E+04  2.19E+01    0.07    0.21*  14.66
+   2      71472  3.0308002E+04  1.77E+01    0.06    0.16*  28.65
+   3      92208  3.0314064E+04  1.63E+01    0.05    0.16   29.20
+   4      71472  3.0367292E+04  2.56E+01    0.08    0.23   27.21
+   5      71472  3.0363205E+04  3.09E+01    0.10    0.27   15.65
+   6      81472  3.0332655E+04  2.75E+01    0.09    0.26*  15.45
+   7      81472  3.0365219E+04  2.64E+01    0.09    0.25*  18.61
+   8      81472  3.0342053E+04  2.67E+01    0.09    0.25   19.40
+   9      82944  3.0335566E+04  2.66E+01    0.09    0.25   16.45
+  10      82944  3.0316508E+04  2.64E+01    0.09    0.25*  22.81
+|-----------------------------------------------------------------------------|
+  10     799872  3.0335073E+04  7.33E+00    0.02    0.22   22.81    1.13  10
+|-----------------------------------------------------------------------------|
+  11     197568  3.0341500E+04  1.61E+01    0.05    0.24*  21.70
+  12     197568  3.0316085E+04  1.59E+01    0.05    0.23*  21.68
+  13     197568  3.0493658E+04  1.82E+02    0.60    2.65    0.15
+  14     197568  3.0329424E+04  1.60E+01    0.05    0.23*   0.15
+  15     197568  3.0324553E+04  1.60E+01    0.05    0.23*   0.15
+|-----------------------------------------------------------------------------|
+  15     987840  3.0328136E+04  8.00E+00    0.03    0.26    0.15    0.54   5
+|=============================================================================|
+| Time estimate for generating 10000 events: 0d:00h:05m:56s
+| Integrate: sum of all components
+|=============================================================================|
+| It      Calls  Integral[fb]  Error[fb]   Err[%]    Acc  Eff[%]   Chi2 N[It] |
+|=============================================================================|
+   1          0  1.5453734E+05  8.71E+01    0.06    0.00*   0.08
+|=============================================================================|
+$extension_stdhep = "stdhep"
+checkpoint = 100
+| Starting simulation for process 'proc'
+| Simulate: using integration grids from file 'proc.m1.vg'
+| Simulate: using integration grids from file 'proc.m2.vg'
+| Simulate: using integration grids from file 'proc.m3.vg'
+| Simulate: activating ISR handler
+| Simulate: ISR/EPA handler mode: pair recoil
+| Simulate: activating parton shower
+     MSTU(12)       changed from              0 to          12345
+| Shower: Using PYTHIA6 shower
+| Simulate: activating hadronization
+| Hadronization: Using PYTHIA6 interface for hadronization and decays
+| RNG: Initializing TAO random-number generator
+| RNG: Setting seed for random-number generator to 14300
+| Simulation: requested number of events = 10000
+|             corr. to luminosity [fb-1] =   6.4709E-02
+| Events: writing to STDHEP file 'proc.stdhep'
+| Events: writing to raw file 'proc.evx'
+| Events: generating 10000 unweighted, unpolarized events ...
+| Events: event normalization mode '1'
+1****************** PYINIT: initialization of PYTHIA routines *****************
+
+ ==============================================================================
+ I                                                                            I
+ I         PYTHIA will be initialized for e- on e+ user configuration         I
+ I            with     80.000 GeV on     80.000 GeV beam energies             I
+ I                                                                            I
+ I           corresponding to    160.000 GeV center-of-mass energy            I
+ I                                                                            I
+ ==============================================================================
+
+ ******** PYMAXI: summary of differential cross-section maximum search ********
+
+           ==========================================================
+           I                                      I                 I
+           I  ISUB  Subprocess name               I  Maximum value  I
+           I                                      I                 I
+           ==========================================================
+           I                                      I                 I
+           I    4   User process 1                I    1.0000D-12   I
+           I                                      I                 I
+           ==========================================================
+
+ ********************** PYINIT: initialization completed **********************
+| 
+| |===================================================================|
+| | % complete | events generated | events remaining | time remaining
+| |===================================================================|
+|      0.0               0              10000              ???
+
+     Advisory warning type 3 given after      108 PYEXEC calls:
+     (PYPREP:) too small mass in jet system
+
+     Advisory warning type 3 given after      118 PYEXEC calls:
+     (PYPREP:) too small mass in jet system
+
+     Advisory warning type 3 given after      136 PYEXEC calls:
+     (PYPREP:) too small mass in jet system
+|      1.0             100               9900              11m:52s
+
+     Advisory warning type 3 given after      286 PYEXEC calls:
+     (PYPREP:) too small mass in jet system
+
+     Advisory warning type 3 given after      304 PYEXEC calls:
+     (PYPREP:) too small mass in jet system
+|      2.0             200               9800              11m:05s
+
+     Advisory warning type 3 given after      536 PYEXEC calls:
+     (PYPREP:) too small mass in jet system
+|      3.0             300               9700              10m:39s
+
+     Advisory warning type 3 given after      660 PYEXEC calls:
+     (PYPREP:) too small mass in jet system
+|      4.0             400               9600              10m:50s
+
+     Advisory warning type 3 given after      984 PYEXEC calls:
+     (PYPREP:) too small mass in jet system
+|      5.0             500               9500              10m:47s
+
+     Advisory warning type 3 given after     1066 PYEXEC calls:
+     (PYPREP:) too small mass in jet system
+|      6.0             600               9400              11m:13s
+
+     Advisory warning type 3 given after     1280 PYEXEC calls:
+     (PYPREP:) too small mass in jet system
+|      7.0             700               9300              11m:13s
+|      8.0             800               9200              10m:42s
+|      9.0             900               9100              10m:22s
+|     10.0            1000               9000              10m:09s
+|     11.0            1100               8900              9m:48s
+|     12.0            1200               8800              9m:51s
+|     13.0            1300               8700              10m:01s
+|     14.0            1400               8600              10m:01s
+|     15.0            1500               8500              9m:47s
+|     16.0            1600               8400              9m:31s
+|     17.0            1700               8300              9m:17s
+|     18.0            1800               8200              9m:10s
+|     19.0            1900               8100              9m:16s
+|     20.0            2000               8000              9m:11s
+|     21.0            2100               7900              9m:02s
+|     22.0            2200               7800              8m:55s
+|     23.0            2300               7700              8m:46s
+|     24.0            2400               7600              8m:38s
+|     25.0            2500               7500              8m:25s
+|     26.0            2600               7400              8m:14s
+|     27.0            2700               7300              8m:09s
+|     28.0            2800               7200              8m:01s
+|     29.0            2900               7100              7m:52s
+|     30.0            3000               7000              7m:45s
+|     31.0            3100               6900              7m:38s
+|     32.0            3200               6800              7m:31s
+|     33.0            3300               6700              7m:25s
+|     34.0            3400               6600              7m:22s
+|     35.0            3500               6500              7m:17s
+|     36.0            3600               6400              7m:11s
+|     37.0            3700               6300              7m:01s
+|     38.0            3800               6200              6m:54s
+|     39.0            3900               6100              6m:47s
+|     40.0            4000               6000              6m:38s
+|     41.0            4100               5900              6m:36s
+|     42.0            4200               5800              6m:29s
+|     43.0            4300               5700              6m:21s
+|     44.0            4400               5600              6m:17s
+|     45.0            4500               5500              6m:10s
+|     46.0            4600               5400              6m:03s
+|     47.0            4700               5300              5m:57s
+|     48.0            4800               5200              5m:52s
+|     49.0            4900               5100              5m:45s
+|     50.0            5000               5000              5m:44s
+|     51.0            5100               4900              5m:39s
+|     52.0            5200               4800              5m:32s
+|     53.0            5300               4700              5m:27s
+|     54.0            5400               4600              5m:23s
+|     55.0            5500               4500              5m:20s
+|     56.0            5600               4400              5m:12s
+|     57.0            5700               4300              5m:07s
+|     58.0            5800               4200              4m:59s
+|     59.0            5900               4100              4m:52s
+|     60.0            6000               4000              4m:44s
+|     61.0            6100               3900              4m:35s
+|     62.0            6200               3800              4m:28s
+|     63.0            6300               3700              4m:20s
+|     64.0            6400               3600              4m:12s
+|     65.0            6500               3500              4m:05s
+|     66.0            6600               3400              3m:59s
+|     67.0            6700               3300              3m:51s
+|     68.0            6800               3200              3m:57s
+|     69.0            6900               3100              3m:50s
+|     70.0            7000               3000              3m:43s
+|     71.0            7100               2900              3m:36s
+|     72.0            7200               2800              3m:28s
+|     73.0            7300               2700              3m:21s
+|     74.0            7400               2600              3m:14s
+|     75.0            7500               2500              3m:06s
+|     76.0            7600               2400              2m:58s
+|     77.0            7700               2300              2m:50s
+|     78.0            7800               2200              2m:43s
+|     79.0            7900               2100              2m:35s
+|     80.0            8000               2000              2m:27s
+|     81.0            8100               1900              2m:20s
+|     82.0            8200               1800              2m:12s
+|     83.0            8300               1700              2m:05s
+|     84.0            8400               1600              1m:57s
+|     85.0            8500               1500              1m:50s
+|     86.0            8600               1400              1m:42s
+|     87.0            8700               1300              1m:35s
+|     88.0            8800               1200              1m:27s
+|     89.0            8900               1100              1m:20s
+|     90.0            9000               1000              1m:12s
+|     91.0            9100                900              1m:05s
+|     92.0            9200                800              0m:58s
+|     93.0            9300                700              0m:50s
+|     94.0            9400                600              0m:43s
+|     95.0            9500                500              0m:36s
+|     96.0            9600                400              0m:29s
+|     97.0            9700                300              0m:21s
+|     98.0            9800                200              0m:14s
+|     99.0            9900                100              0m:07s
+|    100.0           10000                  0              0m:00s
+| |===================================================================|
+| 
+|         ... event sample complete.
+| Events: actual unweighting efficiency =   0.08 %
+Warning: Encountered events with excess weight: 18 events (  0.180 %)
+| Maximum excess weight = 2.291E+01
+| Average excess weight = 5.166E-03
+| Events: closing STDHEP file 'proc.stdhep'
+| Events: closing raw file 'proc.evx'
+| There were no errors and    2 warning(s).
+| WHIZARD run finished.
+|=============================================================================|
+
+
+          ********************************************************
+          *       STDHEP version 5.06.01 -  November 20, 2007    *
+          ********************************************************
+
+
+ STDXWOPEN WARNING: I/O is initialized for stdhep only
+
+          STDXEND:   23050641 words i/o with     9926 efficiency 
+finished run
+------------GOOD COPY
+stdhep.gz file successfully copied on eos
+sending jobs
+run locally
+preparing to send Whizard jobs to produce stdhep files for process wzp6_ee_qq_ecm160
+('njobs=', 1)
+('stdhepdir =', '/afs/cern.ch/user/k/kmekhema/whizard_products/stdhep/winter2023/wzp6_ee_qq_ecm160')
+will run locally
+succesfully sent 1  job(s)
