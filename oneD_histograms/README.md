@@ -20,7 +20,9 @@ __Hierarchy:__ The ROOT file or the printed pdfs will have one directory for eac
 
 How to use
 ===========
-__Geometric selection of histograms:__ In the file ```energy_histos.py```, there is a dictionary called dictionary_of_system. This dictionary has keys of the desired systems of the calorimeter. The value of each of the keys (systems) is a n-tuple with the following arguments:
+All the referred to variables are in the file ```energy_histos.py```. 
+
+__Geometric selection of histograms:__ There is a dictionary called dictionary_of_system. This dictionary has keys of the desired systems of the calorimeter. The value of each of the keys (systems) is a n-tuple with the following arguments:
 
 1. A list of the considered collections per system.
 2. A list of 4 sublists. The 4 sublists are the selections made on staves, modules, towers, and layers in order. For example, let's take the value of the list to be this [["\*"],["\*"],["0","1:2","3:5","6:8"],["0:9","10:19","20:29"]]. This means that we have 4 selections on towers and 3 selections on layers producing a total of 3\*4=12 histogram selections.
@@ -30,6 +32,8 @@ The selections would be tower 0 and the first 10 layers, tower 0 and the second 
 5. A dictionary that contians the complex boolean functions as keys with their selections listed in a list as their values.  These are the implicit selections. 
 
 __Histogram types selection:__ There is a dictionary called histograms_to_select which has the systems as keys and the values are other subdictionaries having the values as dictionaries with the histogram types as keys and their values are boolean such that True means to be produced and False is not to be produced. By this, the user can choose which types are required for each system and each function. The explicit selections are denoted as "no_function".
+
+__scaled_upper_scale_energy:__ This type of histogram is the same as upper_scale_energy histogram but the x-axis is scaled by the MIP value obtained from getting the most probable value (MPV) from the energy distribution of the muons. There is a dictionary called mip that shows the MIP values of each selection compatible with the naming scheme. If the selections are modified by the user, the MIP values should be obtained for these selections from the muons energy distribution. To get this dictionary, run ```energy_histos.py``` on the muons first and then run the ```mpv.py``` script with 2 arguments which are the root file path of the muons histograms and directory in which the range bounds of finding the mpv are printed for the histograms to make sure that the MPV is really the MIP. The ranges can be controlled from ```mpv.py``` script.
 
 __Input files:__ From the step of the full simulation, the data was divided into many ```.slcio``` files for parallel processing. The paths to these ```.slcio``` files is to be put into the list slcio_file_list. This list can be the combination of the initial simulation and their complementary counterparts. 
 ev_start_list list is to give the initial event to start from out of each ```.slcio``` file in order. ev_stop_list list is to give the last event to process out of each ```.slcio``` file in order with -1 meaning the last event. Usually, ev_start is set to zeros (with the length of the slcio_file_list) and ev_stop is set to -1 for all elements with the length of (slcio_file_list) to process all the events.
