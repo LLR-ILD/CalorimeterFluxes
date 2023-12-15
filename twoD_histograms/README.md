@@ -16,3 +16,10 @@ python D_script.py /path/to/root/file/of/1D/histograms /path/to/output/directory
 
 Output
 ===============
+__Implicit selections:__ For a function in a system, the selections are grouped in one 2D histogram with each bin representing a 1D histogram.  <br>
+
+__Explicit selections:__ This is better explained with an example. Let's say that we have 1D histograms of low-scale energy of some system of each module from 1 to 5 with the first 10 layers, second 10 layers, and third 10 layers. This is a total of 15 1D histograms. The different selections of the layers would be grouped in one histogram for the first module, second module,....etc. This produces 5 2D histograms with each one with a fixed selection of the module and all the selections of the layers grouped in bins. The same applies to the layers, we would have a one 2D histogram with the first 10 layers but with each module representing a bin (5 bins for 5 modules), another 2D hisotgram for the second 10 layers and another one for the third 10 layers. This produces 3 2D histograms. Thus, instead of having 3\*5 = 15 histograms like in the case of 1D histograms, we would have 3+5 = 8 histograms. 
+
+Hierarchy
+===============
+First, there are directories of the different systems with subdirectories for the functions. These subdirectories have subsubdirectories for the histograms types. These innermost directories either have a histogram as in the case of the implicit selections or having other subsubsubdirectories with the names: staves, modules, towers,or layers. The directory staves would have the 2D histograms in which the staves are fixed and the bins representing the selections on the other coordinates. The same applies to modules, towers, and layers. 
