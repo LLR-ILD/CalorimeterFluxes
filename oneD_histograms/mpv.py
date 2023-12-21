@@ -1,13 +1,10 @@
 import ROOT
 import os
+import sys
 from CalorimeterFluxes.twoD_histograms.D_histograms_library import get_histograms
-from CalorimeterFluxes.oneD_histograms.histograms_library import validate_command_line_args
 
-help_string = """The script must be called with 2 arguments as:
-$ python mpv.py  histograms_out_dir
-- histograms_out_dir: Folder to write the histograms output to.
-    Its parent must exist. The folder itself can exist, but must be empty then.
-"""
+root_file_path = sys.argv[1]
+histo_dir = sys.argv[2]
 
 def find_mpv(histogram, min, max):
 
@@ -37,13 +34,12 @@ def fit(histogram, lower_bound, upper_bound, used_canvas):
     used_canvas.Write()
     used_canvas.Update()
 
-file = ROOT.TFile.Open("/home/llr/ilc/hassouna/script2/CalorimeterFluxes/data/ILD/FullSim/energy_histograms/muons90/all.root")
+file = ROOT.TFile.Open(root_file_path)
 histograms = get_histograms(file)
 
 system_bounds = {"RPCHCalBarrel":[0.2e-6,1.2e-6], "RPCHCalEndcap":[0.2e-6,1.2e-6], "RPCHCalECRing":[0.2e-6, 1.2e-6], "ScECALBarrel":[0.0002,0.0005], "ScECalEndcap":[0.0001,0.0005], "ScHcalBarrel":[0.0004, 0.0009],
                   "ScHCalEndcap":[0.0004, 0.0009], "ScHCalECRing":[0.0004, 0.0009], "SiECALBarrel":[0.0001, 0.0004], "SiECalEndcap":[0.0001, 0.0004], "SiECalRing":[0.0001, 0.0004]}
 
-histo_dir = validate_command_line_args(help_string)
 myfile = ROOT.TFile(histo_dir + '/all.root', 'UPDATE')
 canvas = ROOT.TCanvas("canvas", "canvas", 900, 600)
 mpv = {}

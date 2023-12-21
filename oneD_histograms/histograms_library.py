@@ -96,12 +96,6 @@ def histograms_creation(dictionary_of_system, system, histograms_to_select, hist
         hist_time.GetXaxis().SetTitle("Weighted Time of Subhits [ns]")
         hist_time.GetYaxis().SetTitle("Number of hits times Energy [GeV]")
         created_histograms["time"] = hist_time
-    
-    if histograms_to_select["time_peaks"]:
-        hist_time_peaks = ROOT.TH1F(histogram_name + '_time_peaks', 'Time peaks histogram - {}'.format(histogram_name), 10, 0, 10)
-        hist_time_peaks.GetXaxis().SetTitle("Time between peaks [ns]")
-        hist_time_peaks.GetYaxis().SetTitle("frequency")
-        created_histograms["time_peaks"] = hist_time_peaks
 
     if histograms_to_select["lower_scale_energy"]:
         hist_lower_scale = ROOT.TH1F(histogram_name + '_lower_scale', 'Energy histogram - {}'.format(histogram_name), lower_scale_args[0], 0, lower_scale_args[1])
@@ -141,7 +135,7 @@ def histograms_creation(dictionary_of_system, system, histograms_to_select, hist
 
     return created_histograms
 
-type_names = ["time", "time_peaks", "lower_scale_energy", "upper_scale_energy", "scaled_upper_scale_energy", "#Nhits", "high_#Nhits"]
+type_names = ["time", "lower_scale_energy", "upper_scale_energy", "scaled_upper_scale_energy", "#Nhits", "high_#Nhits"]
 types_number = len(type_names)
 
 def appending(dictionary_of_system, system, histograms_to_select, histogram_name, histograms_lists, mip):
@@ -259,7 +253,7 @@ def selecting(function_dict, funcion_name, func_selection, is_endcap, decoded_hi
 def fill_histogram(dictionary_of_system, systems, collections, function_dict, system_functions, mip, histograms_to_select_dict, indexo, slcio_file,  ev_start, ev_stop):
     
     histograms_dicts, hits_dict, parsing_dicts = name_histograms(dictionary_of_system, systems, histograms_to_select_dict, system_functions, indexo, mip)
-    time_histograms, time_peaks_histograms, lower_scale_histograms, upper_scale_histograms, scaled_upper_scale_histograms, Nhits_histograms, high_Nhits_histograms = histograms_dicts
+    time_histograms, lower_scale_histograms, upper_scale_histograms, scaled_upper_scale_histograms, Nhits_histograms, high_Nhits_histograms = histograms_dicts
     reader = LcioReader.LcioReader(slcio_file)
     No_events = reader.getNumberOfEvents()
     print(No_events)
@@ -341,7 +335,7 @@ def fill_histogram(dictionary_of_system, systems, collections, function_dict, sy
                         hist_high_Nhits.Fill(Nhit)
                     
 
-    return [time_histograms, time_peaks_histograms, lower_scale_histograms, upper_scale_histograms, scaled_upper_scale_histograms, Nhits_histograms, high_Nhits_histograms]
+    return [time_histograms, lower_scale_histograms, upper_scale_histograms, scaled_upper_scale_histograms, Nhits_histograms, high_Nhits_histograms]
 
 ###########################################################################################################
 
@@ -453,7 +447,11 @@ def execute_parallel_processing(dictionary_of_system, systems, collections, func
 ###########################################################################################################
 
 def saving_histogram(histo_dir, canvas, type_name, type_dict, func_dir, system, function):
-    type_name_dir = func_dir.mkdir(type_name)
+    if not func_dir.GetDirectory(type_name): # Check if the directory exists
+        type_name_dir = func_dir.mkdir(type_name) # If the directory does not exist, create it
+    else:
+        type_name_dir = func_dir.GetDirectory(type_name) # If it exists, retrieve the existing directory
+    if type_name_dir is None: print("Failed to create directory: {}".format(type_name))
     type_name_dir.cd()
     directory_type_name_dir = str(histo_dir) + "/" + system + "/" + function + "/" + type_name
     
@@ -469,14 +467,21 @@ def saving_histogram(histo_dir, canvas, type_name, type_dict, func_dir, system, 
 
 def write_histogram(histo_dir, canvas, number_of_processes, systems, system_functions, histograms_to_select_dict, all_histograms_dicts):
     merged_histograms = merging(number_of_processes, systems, system_functions, histograms_to_select_dict, all_histograms_dicts)
-    # histograms_names = ["time", "time_peaks", "lower_scale_energy", "upper_scale_energy", "#Nhits"]
     myfile = ROOT.TFile(str(histo_dir) + '/all.root', 'UPDATE')
    
     for system in systems:
-        sys_dir = myfile.mkdir(system)
+        if not myfile.GetDirectory(system): # Check if the directory exists
+            sys_dir = myfile.mkdir(system) # If the directory does not exist, create it
+        else:
+            sys_dir = myfile.GetDirectory(system) # If it exists, retrieve the existing directory
+        if sys_dir is None: print("Failed to create directory: {}".format(system))
         functions = system_functions[system]
         for function in functions:
-            func_dir = sys_dir.mkdir(function)
+            if not sys_dir.GetDirectory(function): # Check if the directory exists
+                func_dir = sys_dir.mkdir(function) # If the directory does not exist, create it
+            else:
+                func_dir = sys_dir.GetDirectory(function) # If it exists, retrieve the existing directory
+            if func_dir is None: print("Failed to create directory: {}:{}".format(system, function))
             iterable_histograms_and_names = zip(type_names, merged_histograms)
             for type_name, type_dict in iterable_histograms_and_names:
                 if histograms_to_select_dict[system][function][type_name]:

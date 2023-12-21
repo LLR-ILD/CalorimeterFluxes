@@ -285,7 +285,10 @@ def all_histograms(histogram_dictionary, histograms_x_titles, histogram_selectio
 ##################################################################################################################################################
 
 def saving_histogram(histogram_list, save_dir, histograms_y_titles, histo_type, canvas, log=False):
-    if log: canvas.SetLogz(1) # A flag that changes the scale to logarithmic if needed
+    if log: 
+        canvas.SetLogz(1) # A flag that changes the scale to logarithmic if needed
+    else:
+        canvas.SetLogz(0)
     for histogram in histogram_list:
         histogram.SetStats(0)  # Remove the statistics box
         histogram.Draw("COLZ")

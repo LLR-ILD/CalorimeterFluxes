@@ -35,16 +35,17 @@ dictionary_of_system = {
         "SiECalEndcap": (["ECalEndcapSiHitsEven", "ECalEndcapSiHitsOdd"],   [["*"],["*"],                 ["0","1:2","3:5","6:8"],      ["0:9","10:19","20:29"]],   [[1000, 20], [300, 0.001], [100, 0.03], [100, 100], [100, 500]], [[0.0001]], {}),
         "SiECALBarrel": (["ECalBarrelSiHitsEven", "ECalBarrelSiHitsOdd"],   [["*"],["1","2","3","4","5"], ["*"],                        ["0:9","10:19","20:29"]],   [[1000, 20], [300, 0.001], [100, 0.03], [250, 250], [100, 500]], [[0.0001]], {}), 
         "SiECalRing": (["EcalEndcapRingCollection"],                        [["*"],["*"],                 ["*"],                        ["0:9","10:19","20:29"]],   [[1000, 20], [300, 0.001], [100, 0.03], [250, 250], [100, 500]], [[0.0001]], {}), 
-        "ScECalEndcap": (["ECalEndcapScHitsEven", "ECalEndcapScHitsOdd"],   [["*"],["*"],                 ["0","1:2","3:5","6:8"],      ["0:9","10:19","20:29"]],   [[1000, 20], [300, 1e-7], [100, 3e-4], [250, 250], [100, 500]], [[3e-5]], {}),
-        "ScECALBarrel": (["ECalBarrelScHitsEven", "ECalBarrelScHitsOdd"],   [["*"],["1","2","3","4","5"], ["*"],                        ["0:9","10:19","20:29"]],   [[1000, 20], [300, 1e-7], [100, 3e-4], [250, 250], [100, 500]], [[3e-5]], {}), 
+        "ScECalEndcap": (["ECalEndcapScHitsEven", "ECalEndcapScHitsOdd"],   [["*"],["*"],                 ["0","1:2","3:5","6:8"],      ["0:9","10:19","20:29"]],   [[1000, 20], [300, 2e-6], [100, 3e-4], [250, 250], [100, 500]], [[3e-5]], {}),
+        "ScECALBarrel": (["ECalBarrelScHitsEven", "ECalBarrelScHitsOdd"],   [["*"],["1","2","3","4","5"], ["*"],                        ["0:9","10:19","20:29"]],   [[1000, 20], [300, 2e-6], [100, 3e-4], [250, 250], [100, 500]], [[3e-5]], {}), 
         "RPCHCalEndcap": (["HCalEndcapRPCHits"],                            [["*"],["*"],                 ["0:3","4:7","8:11","12:15"], ["0:15","16:31","32:48"]],  [[1000, 20], [300, 2e-6],  [100, 3e-5], [250, 250], [100, 500]], [[3e-6]], {}),
         "RPCHCalBarrel": (["HCalBarrelRPCHits"],                            [["*"],["*"],                 ["*"],                        ["0:15","16:31","32:48"]],  [[1000, 20], [300, 2e-6],  [100, 3e-5], [250, 250], [100, 500]], [[3e-6]], {"complex_sad": ["0:79", "80:159", "160:234"]}), 
         "RPCHCalECRing": (["HCalECRingRPCHits"],                            [["*"],["*"],                 ["*"],                        ["*"]],                     [[1000, 20], [300, 2e-6], [100, 3e-4], [250, 250], [100, 500]], [[3e-5]], {}),         
-        "ScHCalEndcap": (["HcalEndcapsCollection"],                         [["*"],["*"],                 ["0:3","4:7","8:11","12:15"], ["0:15","16:31","32:48"]],  [[1000, 20], [300, 1e-7], [100, 3e-3], [250, 250], [100, 500]], [[3e-4]], {}),
-        "ScHcalBarrel": (["HcalBarrelRegCollection"],                       [["*"],["*"],                 ["*"],                        ["0:15","16:31","32:48"]],  [[1000, 20], [300, 1e-7], [100, 3e-3], [250, 250], [100, 500]], [[3e-4]], {"complex_happy" :["0:29", "30:59", "60:76"]}), 
-        "ScHCalECRing": (["HcalEndcapRingCollection"],                      [["*"],["*"],                 ["*"],                        ["*"]],                     [[1000, 20], [300, 1e-7], [100, 3e-3], [250, 250], [100, 500]], [[3e-4]], {})                 
+        "ScHCalEndcap": (["HcalEndcapsCollection"],                         [["*"],["*"],                 ["0:3","4:7","8:11","12:15"], ["0:15","16:31","32:48"]],  [[1000, 20], [300, 2e-6], [100, 3e-3], [250, 250], [100, 500]], [[3e-4]], {}),
+        "ScHcalBarrel": (["HcalBarrelRegCollection"],                       [["*"],["*"],                 ["*"],                        ["0:15","16:31","32:48"]],  [[1000, 20], [300, 2e-6], [100, 3e-3], [250, 250], [100, 500]], [[3e-4]], {"complex_happy" :["0:29", "30:59", "60:76"]}), 
+        "ScHCalECRing": (["HcalEndcapRingCollection"],                      [["*"],["*"],                 ["*"],                        ["*"]],                     [[1000, 20], [300, 2e-6], [100, 3e-3], [250, 250], [100, 500]], [[3e-4]], {})                 
         }
-systems = dictionary_of_system.keys()
+# systems = dictionary_of_system.keys()
+systems = ["ScECalEndcap", "ScECALBarrel", "ScHCalEndcap", "ScHcalBarrel", "ScHCalECRing"]
 collections = list(dict.fromkeys(list(chain(*[dictionary_of_system[system][0] for system in systems])))) #Retrieve all the collections
 system_functions = {} #Retrieve all the functions per systems
 histograms_to_select = {}
@@ -54,7 +55,7 @@ for system in systems:
     system_functions[system] = functions_list
     histograms_to_select[system] = {}
     for function in functions_list:
-        histograms_to_select[system][function] = {"time":True, "time_peaks":False, "lower_scale_energy":True, "upper_scale_energy": True, "scaled_upper_scale_energy": True, "#Nhits": True, "high_#Nhits": True}
+        histograms_to_select[system][function] = {"time":False, "lower_scale_energy":True, "upper_scale_energy": True, "scaled_upper_scale_energy": True, "#Nhits": False, "high_#Nhits": False}
 #Creating ROOT canvas to save the histograms
 canvas = TCanvas('canvas', 'Histogram', 800, 600)
 
@@ -63,9 +64,8 @@ canvas = TCanvas('canvas', 'Histogram', 800, 600)
 # partial_file_list = glob("/home/llr/ilc/hassouna/script2/CalorimeterFluxes/data/ILD/FullSim/wzp6_ee_qq_ecm365/partial*.slcio")
 # complementary_file_list = glob("/home/llr/ilc/hassouna/script2/CalorimeterFluxes/data/ILD/FullSim/wzp6_ee_qq_ecm365/complementary*.slcio")
 # slcio_file_list = partial_file_list + complementary_file_list
-# number_of_processes = len(slcio_file_list)
-number_of_processes = 100
-slcio_file_list = ["/home/llr/ilc/hassouna/script2/CalorimeterFluxes/data/ILD/FullSim/Machine/beamstrahlung_FCCee@91GeV/ILD_l5_v11gamma/pairs-{}_ZatIP_tpcTimeKeepMC_keep_microcurlers_10MeV_30mrad_ILD_l5_v11gamma.slcio".format(i+1) for i in range(number_of_processes)]
+number_of_processes = 25
+slcio_file_list = ["/home/llr/ilc/hassouna/script2/CalorimeterFluxes/data/ILD/FullSim/slcio_data/GeV90/mu-_90/partial_{}_fullSim_mu.slcio".format(i) for i in range(number_of_processes)]
 
 ev_start_list = [0 for _ in range(number_of_processes)] 
 ev_stop_list = [-1 for _ in range(number_of_processes)]
