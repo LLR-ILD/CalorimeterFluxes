@@ -19,7 +19,7 @@ def plotting(slcio_file, ev_start, ev_stop, system, module, collections, output_
     if ev_stop < 0:
         ev_stop = No_events + ev_stop + 1
 
-    ntuple = ROOT.TNtuple("hits", "hits", "z:x:module")
+    ntuple = ROOT.TNtuple("hits", "hits", "y:x:ypos")
     # ntuple_subhits = ROOT.TNtuple("subhits", "subhits", "z_sub:r_sub:t_sub")
     for i, event in enumerate(reader):
         # Print out a progress update
@@ -38,11 +38,12 @@ def plotting(slcio_file, ev_start, ev_stop, system, module, collections, output_
                 decoded_hit = decoding(id_decoder, hit, is_endcap)
                 # subhit_information = subhit_decoding(hit)
                 
-                if decoded_hit["systems"] == system and decoded_hit["staves"] == 7:
-                    x, y, z, l = decoded_hit["pos_x"], decoded_hit["pos_y"], decoded_hit["pos_z"], decoded_hit["modules"]
+                if decoded_hit["systems"] == system and decoded_hit["staves"] == 1 and decoded_hit["modules"] == 1 and decoded_hit["towers"] == 31 and decoded_hit["layers"] == 1:
+                    # print(decoded_hit["staves"], decoded_hit["modules"], decoded_hit["towers"])
+                    x, y, z, l = decoded_hit["pos_x"], decoded_hit["pos_y"], decoded_hit["pos_z"], decoded_hit["xs"]
                     # r = (x**2 + y**2)**(0.5)
                     # print(r,z)
-                    ntuple.Fill(array('f', [z, x, l]))
+                    ntuple.Fill(array('f', [y, x, l]))
                     # for subhit in subhit_information:
                     #     x_sub, y_sub, z_sub, t_sub = subhit.pos_x, subhit.pos_y, subhit.pos_z, subhit.time
                     #     r_sub = (x_sub**2 + y_sub**2)**(0.5)
@@ -50,11 +51,13 @@ def plotting(slcio_file, ev_start, ev_stop, system, module, collections, output_
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
     # Drawing the ntuple
-    ntuple.Draw("z:x:module", "", "colz")
+    ntuple.SetMarkerSize(0.5)
+    ntuple.SetMarkerStyle(8)
+    ntuple.Draw("y:x:ypos", "", "colz")
     
     # Get the frame of the pad
     hist = ROOT.gPad.GetPrimitive("htemp")  # This gets the last histogram drawn
-    hist.SetTitle("Modules Geometry (system = SiECALBarrel, stave = 7);X;Z")  # Set your title and axis labels here
+    hist.SetTitle("I Geometry (system=ScHcalBarrel, stave=1, module=1, tower=31);X;Y")  # Set your title and axis labels here
 
     pad = ROOT.gPad
     pad.Modified()
@@ -74,19 +77,19 @@ def plotting(slcio_file, ev_start, ev_stop, system, module, collections, output_
         # Position the title above or to the right of the color palette
         title_x = x2 + 0.01 # Adjust as needed
         title_y = y2 + 0.05  # Centered vertically on the palette
-        latex.DrawLatexNDC(title_x, title_y, "Modules")
+        latex.DrawLatexNDC(title_x, title_y, "I")
     
-    ROOT.gPad.SaveAs(os.path.join(output_dir, "system_SiECALBarrel_modules_stave7.pdf"))
+    ROOT.gPad.SaveAs(os.path.join(output_dir, "system_ScHcalBarrel_CellYs8.pdf"))
 
     # ntuple_subhits.Draw("z_sub:r_sub:t_sub", "", "colz")
     # ROOT.gPad.SaveAs(os.path.join(output_dir, "system_time.pdf"))
 
 out_dir = "/home/llr/ilc/hassouna/script2/CalorimeterFluxes/data/ILD/FullSim/geometry"                 
 file = "/home/llr/ilc/hassouna/script2/CalorimeterFluxes/data/ILD/FullSim/slcio_data/GeV90/mu-_90/partial_0_fullSim_mu.slcio"
-systemo = 20
+systemo = 22
 modulo = 3
-system_collections = ["ECalBarrelSiHitsEven", "ECalBarrelSiHitsOdd"]
+system_collections = ["HcalBarrelRegCollection"]
 
 c = ROOT.TCanvas("c", "3D Geometry Color Plot", 1200, 800)
 # ROOT.gStyle.SetPalette(ROOT.kRainBow)
-plotting(file, 0, 40000, systemo, modulo, system_collections, out_dir)
+plotting(file, 0, 1000, systemo, modulo, system_collections, out_dir)

@@ -189,6 +189,26 @@ def histograms_selections(histogram_dictionary, systems, system_functions):
 
 ##################################################################################################################################################
 
+def get_min_max(histograms_list):
+    overall_min = float('inf') # Start with a very large number
+    overall_max = float('-inf')  # Start with a very small number
+    for hist in histograms_list:
+        for bin in range(1, hist.GetNbinsX() + 1):
+            bin_content = hist.GetBinContent(bin)            
+            # Update overall_min for non-zero values
+            if 0 < bin_content < overall_min:
+                overall_min = bin_content
+            # Update overall_max
+            if bin_content > overall_max:
+                overall_max = bin_content
+    # If overall_min wasn't updated, set it to a default small value
+    if overall_min == float('inf'):
+        overall_min = 1e-6
+    # If overall_max wasn't updated (very unlikely), set it to a default larger value
+    if overall_max == float('-inf'):
+        overall_max = 1e3  # Example default value
+    return overall_min, overall_max
+
 def make_histogram(histogram_dictionary, histogram_selection_dictionary, histograms_x_titles, selected_histogram_list_type_for_element,  histos_names, system, function, histogram_type, element=None, element_selection = None):
     min_bin_value = min([hist.GetXaxis().GetXmin() for hist in selected_histogram_list_type_for_element])
     max_bin_value = max([hist.GetXaxis().GetXmax() for hist in selected_histogram_list_type_for_element])
@@ -202,6 +222,9 @@ def make_histogram(histogram_dictionary, histogram_selection_dictionary, histogr
         hist_2d_type.GetXaxis().SetBinLabel(i+1, histos_names[i])
         for bin in range(1, hist.GetNbinsX() + 1):
             hist_2d_type.Fill(i, hist.GetBinCenter(bin), hist.GetBinContent(bin))
+    # print(system, get_min(selected_histogram_list_type_for_element))
+    hist_2d_type.SetMinimum(get_min_max(selected_histogram_list_type_for_element)[0])
+    hist_2d_type.SetMaximum(get_min_max(selected_histogram_list_type_for_element)[1])
     return hist_2d_type
 
 def product_of_keys_lengths(keys_element, dictionary):
@@ -284,7 +307,7 @@ def all_histograms(histogram_dictionary, histograms_x_titles, histogram_selectio
 
 ##################################################################################################################################################
 
-def saving_histogram(histogram_list, save_dir, histograms_y_titles, histo_type, canvas, log=False):
+def saving_histogram(histogram_list, save_dir, histograms_y_titles, histo_type, canvas, entries, units, log=False, stats=False):
     if log: 
         canvas.SetLogz(1) # A flag that changes the scale to logarithmic if needed
     else:
@@ -292,8 +315,56 @@ def saving_histogram(histogram_list, save_dir, histograms_y_titles, histo_type, 
     for histogram in histogram_list:
         histogram.SetStats(0)  # Remove the statistics box
         histogram.Draw("COLZ")
-        canvas.Update() # Update the canvas to ensure the palette is created
+        canvas.Update()  # Update the canvas to ensure the palette is created
 
+    for histogram in histogram_list:
+        histogram.SetStats(0)
+        histogram.Draw("COLZ")
+        canvas.Update()  # Update the canvas to ensure the palette is created
+
+        stats_boxes = []  # List to hold TPaveText objects
+
+        if stats:
+            xbins_number = histogram.GetNbinsX()
+            xmin, xmax = histogram.GetXaxis().GetXmin(), histogram.GetXaxis().GetXmax()  # Get X-axis range
+            xrange = xmax - xmin  # Calculate the X-axis range
+            ymin, ymax = histogram.GetYaxis().GetXmin(), histogram.GetYaxis().GetXmax()  # Get Y-axis range
+            yrange = ymax - ymin  # Calculate the Y-axis range
+            for xbin in range(1, xbins_number + 1):
+                # Project the Y-bins for this X-bin slice
+                proj_name = "proj_{}".format(xbin)
+                histogram.GetXaxis().SetRange(xbin, xbin)
+                hist_proj_y = histogram.ProjectionY(proj_name, xbin, xbin)
+
+                # Create a TPaveText to display the stats
+                x1NDC = (((xbin*xrange)/xbins_number) - 1) + xmin
+                x2NDC = (((xbin*xrange)/xbins_number)) + xmin
+                y1NDC = -0.3*yrange + ymin
+                y2NDC = -0.1*yrange + ymin
+                stats_box = ROOT.TPaveText(x1NDC, y1NDC, x2NDC, y2NDC)
+                
+                # Calculate statistics for this projection
+                mean = hist_proj_y.GetMean()
+                stddev = hist_proj_y.GetStdDev()
+                sum_bin_contents = hist_proj_y.Integral()  # Get the sum of the bin contents
+                stats_box.AddText("Mean: {:.2e} {}".format(mean,units[histo_type]))
+                stats_box.AddText("Std Dev: {:.2e} {}".format(stddev,units[histo_type]))
+                stats_box.AddText("{}: {:.2e}".format(entries[histo_type],sum_bin_contents))
+                stats_box.SetTextSize(0.02)  # Adjust font size as needed
+
+                stats_boxes.append(stats_box)  # Add to list to maintain scope
+
+            # Reset the X-axis range
+            histogram.GetXaxis().SetRange(1, histogram.GetNbinsX())
+
+        # Draw the stats boxes after histogram
+        for box in stats_boxes:
+            box.Draw()
+
+        # Update canvas to reflect the drawn stats boxes
+        canvas.Modified()
+        canvas.Update()
+ 
         palette = histogram.GetListOfFunctions().FindObject("palette")
         if palette:
             x1 = palette.GetX1NDC()
@@ -318,7 +389,7 @@ def saving_histogram(histogram_list, save_dir, histograms_y_titles, histo_type, 
         histogram.Write()
         histogram.Delete()
 
-def write_histograms(twoD_histograms, histogram_selection_dictionary, histograms_y_titles, dir, canvas, log=False):
+def write_histograms(twoD_histograms, histogram_selection_dictionary, histograms_y_titles, dir, canvas, entries, units, log=False, stats=False):
     if not os.path.exists(dir):os.makedirs(dir)
     myfile = ROOT.TFile(dir + '/all.root', 'UPDATE')
     for system in twoD_histograms.keys():
@@ -354,7 +425,7 @@ def write_histograms(twoD_histograms, histogram_selection_dictionary, histograms
                         element_dir = "{}/{}".format(histo_type_dir, element)
                         if not os.path.exists(element_dir): os.makedirs(element_dir)
                         histogram_list = twoD_histograms[system][function][histo_type][element]
-                        saving_histogram(histogram_list, element_dir, histograms_y_titles, histo_type, canvas, log)
+                        saving_histogram(histogram_list, element_dir, histograms_y_titles, histo_type, canvas, entries, units, log, stats)
             else:
                 for histo_type in twoD_histograms[system][function].keys():
                     if not func_dir_root.GetDirectory(histo_type): # Check if the directory exists
@@ -365,5 +436,5 @@ def write_histograms(twoD_histograms, histogram_selection_dictionary, histograms
                     histo_type_dir = "{}/{}".format(func_dir, histo_type)
                     if not os.path.exists(histo_type_dir): os.makedirs(histo_type_dir)
                     histogram_list = twoD_histograms[system][function][histo_type] 
-                    saving_histogram(histogram_list, histo_type_dir, histograms_y_titles, histo_type, canvas, log)
+                    saving_histogram(histogram_list, histo_type_dir, histograms_y_titles, histo_type, canvas, entries, units, log, stats)
     myfile.Close()
