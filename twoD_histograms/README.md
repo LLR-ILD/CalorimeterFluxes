@@ -9,7 +9,7 @@ Run the script ```D_script.py``` with 3 arguments:  <br>
 1. The path to the ROOT file of the 1D histograms.
 2. The path to the directory in which the output 2D histograms are to be saved. The output is a ROOT file along with printed histograms in pdfs following the hierarchcal structure of the ROOT file.
 3. This is a boolean value. If True, the printed histograms would be in logarithmic scale; otherwise (False), they would be in a normal linear scale.
-4. This is a boolean value. If True, each bin will have a box printed below it with the statsistics of it (mean, standard deviation, and the integration); otherwise (False), the statistics wouldn't be printed out. 
+4. This is a boolean value. If True, each bin will have a box printed below it with the statsistics of it (mean, standard deviation, and the integration); otherwise (False), the statistics wouldn't be printed out. If the 2D histograms are of scaled merged processes, set the variable merged=True to get the integral divided by second in the stats boxes (just a visualization correction and has nothing to do with the real data).  
 The command would be:
 ```
 python D_script.py /path/to/root/file/of/1D/histograms /path/to/output/directory <True or False> <True or False>
