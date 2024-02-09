@@ -1,4 +1,3 @@
-import sys
 import ROOT
 import os
 from array import array
@@ -81,7 +80,7 @@ def write_histogram(histo_dir, canvas, merged_histos, systemss, system_per_funct
                 saving_histogram(histo_dir, canvas, type_name, type_dict, func_dir, system, function)
     myfile.Close()
     
-root_file = sys.argv[1]
+root_file = "/home/llr/ilc/hassouna/script2/CalorimeterFluxes/data/ILD/FullSim/Energy_histos/GeV240/merged_log/all.root"
 file = ROOT.TFile.Open(root_file)
 histogram_dictionary = get_histograms(file)
 
