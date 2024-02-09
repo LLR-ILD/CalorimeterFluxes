@@ -4,4 +4,4 @@ Geometry Plots
 
 Normaliztion
 =================
-The ```norm.py``` script can be used as a template for normalizing 1D histograms. There are many parameters to control such as the y-axis title after normalization, the ew binning, the systems, functions, and types to be considered...etc. The ROOT file directory has to be specified and the ROOT file must follow the structure in this package and the type names have to follow those in ```oneD_histograms.histograms_library```. This is just a template to be modified by the user.  
+The ```norm.py``` script can be used as a template for normalizing 1D histograms. There are many parameters to control such as the y-axis title after normalization, the ew binning, the systems, functions, and types to be considered...etc. The ROOT file directory has to be specified and the ROOT file must follow the structure in this package and the type names have to follow those in ```oneD_histograms/histograms_library.py```. This is just a template to be modified by the user.  
