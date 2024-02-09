@@ -32,3 +32,7 @@ The details of every step are explained in the Read.md files in each designated 
 2. The full simulation in ILD is done using  the ```CalorimeterFluxes/full_simulation``` directory.
 3. 1D histograms are obtained using the ```CalorimeterFluxes/oneD_histograms``` directory.
 4. Step 4 depends on what the user wants. It can be obtaining 2D histograms from grouped 1D histograms using the ```CalorimeterFluxes/twoD_histograms``` directory. It also can be merging different processes in one unified 1D histograms (1 histogram per coordinate selection); then, getting the 2D histograms.
+
+Produced Results
+==================
+1D and 2D histograms of multiple processes are produced at 4 different energy scales. The Results are shown in the Histograms directory. Also, some random geometric plots of the calorimeter can be found in the geometry directory along with a brief description of how the can be produced in the ```README.md``` file in the visualization directory. 
