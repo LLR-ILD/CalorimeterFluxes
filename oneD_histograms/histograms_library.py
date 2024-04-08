@@ -278,7 +278,6 @@ def fill_histogram(dictionary_of_system, systems, collections, function_dict, sy
     time_histograms, lower_scale_histograms, upper_scale_histograms, energy_histograms, scaled_upper_scale_histograms, scaled_energy_histograms,  Nhits_histograms, high_Nhits_histograms, all_Nhits_histograms = histograms_dicts
     reader = LcioReader.LcioReader(slcio_file)
     No_events = reader.getNumberOfEvents()
-    print(No_events)
     if ev_stop < 0:
         ev_stop = No_events + ev_stop + 1
     
