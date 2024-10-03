@@ -2,7 +2,6 @@ import ROOT
 import os
 from array import array
 from twoD_histograms.D_histograms_library import get_histograms
-
 import ROOT
 
 def modify_and_normalize_histogram(hist, y_title):
@@ -52,11 +51,15 @@ def saving_histogram(histo_dir, canvas, type_name, type_dict, func_dir, system, 
     for hist in type_dict[system][function]:
         hist.Draw("HIST")
         canvas.SaveAs(directory_type_name_dir + "/{}".format(hist.GetName()) + ".pdf")
+        # Check if a histogram with the same name already exists in the ROOT file and delete it
+        existing_hist = ROOT.gDirectory.Get(hist.GetName())
+        if existing_hist:ROOT.gDirectory.Delete(hist.GetName() + ";*")  # Delete all versions
+    
+        # Write the histogram to the ROOT file
         hist.Write()
-        # Explicitly delete the histogram after writing to ROOT file and saving to PDF
         hist.Delete()
 
-def write_histogram(histo_dir, canvas, merged_histos, systemss, system_per_functions):
+def write_histogram(histo_dir, canvas, merged_histos, systemss, system_per_functions, type_names):
     """This function is minimally modified from oneD_histograms.histograms_library.py script."""
     directory_type_name_dir = str(histo_dir)
     if not os.path.exists(directory_type_name_dir): os.makedirs(directory_type_name_dir)
@@ -79,35 +82,35 @@ def write_histogram(histo_dir, canvas, merged_histos, systemss, system_per_funct
             for type_name, type_dict in iterable_histograms_and_names:
                 saving_histogram(histo_dir, canvas, type_name, type_dict, func_dir, system, function)
     myfile.Close()
-    
-root_file = "/home/llr/ilc/hassouna/script2/CalorimeterFluxes/data/ILD/FullSim/Energy_histos/GeV240/merged_log/all.root"
-file = ROOT.TFile.Open(root_file)
-histogram_dictionary = get_histograms(file)
+if __name__ == "__main__":  
+    root_file = "/home/llr/ilc/hassouna/script2/CalorimeterFluxes/data/ILD/FullSim/Energy_histos/GeV240/merged_log/all.root"
+    file = ROOT.TFile.Open(root_file)
+    histogram_dictionary = get_histograms(file)
 
-system_functions = {}
-systems = histogram_dictionary.keys()
-for system in systems:
-    functions = histogram_dictionary[system].keys()
-    system_functions[system] = functions
-
-type_names = ["#Nhits"]
-histogram_numbers = len(type_names)
-
-merged_histograms = [{} for _ in range(histogram_numbers)]
-for j, histogram_type in enumerate(type_names):
+    system_functions = {}
+    systems = histogram_dictionary.keys()
     for system in systems:
-        merged_histograms[j][system] = {}
-        functions = system_functions[system]
-        for function in functions:
-            merged_histograms[j][system][function] = []
-            iterable_histograms = histogram_dictionary[system][function]["#Nhits"]
-            for hist in iterable_histograms:
-                merged_hist = modify_and_normalize_histogram(hist, "probability of events")
-                merged_histograms[j][system][function].append(merged_hist)
+        functions = histogram_dictionary[system].keys()
+        system_functions[system] = functions
 
-# print(merged_histograms)
-output_dir = "/home/llr/ilc/hassouna/script2/CalorimeterFluxes/data/ILD/FullSim/energy_histograms/GeV240/normalized_240_all"
-canvas = ROOT.TCanvas('canvas', 'Histogram', 800, 600)
-# canvas.SetLogy(1)
+    types = ["#Nhits"]
+    histogram_numbers = len(types)
 
-write_histogram(output_dir, canvas, merged_histograms, systems, system_functions)     
+    merged_histograms = [{} for _ in range(histogram_numbers)]
+    for j, histogram_type in enumerate(types):
+        for system in systems:
+            merged_histograms[j][system] = {}
+            functions = system_functions[system]
+            for function in functions:
+                merged_histograms[j][system][function] = []
+                iterable_histograms = histogram_dictionary[system][function]["#Nhits"]
+                for hist in iterable_histograms:
+                    merged_hist = modify_and_normalize_histogram(hist, "probability of events")
+                    merged_histograms[j][system][function].append(merged_hist)
+
+    # print(merged_histograms)
+    output_dir = "/home/llr/ilc/hassouna/script2/CalorimeterFluxes/data/ILD/FullSim/energy_histograms/GeV240/normalized_240_all"
+    canvas = ROOT.TCanvas('canvas', 'Histogram', 800, 600)
+    # canvas.SetLogy(1)
+
+    write_histogram(output_dir, canvas, merged_histograms, systems, system_functions)     

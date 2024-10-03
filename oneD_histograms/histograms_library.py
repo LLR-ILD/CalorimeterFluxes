@@ -89,14 +89,34 @@ class ComplexFunction:
 
 ###########################################################################################################
 
-def histograms_creation(histograms_to_select, histogram_name, time_args, lower_scale_args, upper_scale_args, all_scale_args, Nhits_args, high_Nhits_args, all_Nhit_args, threshold, mip, en_mip):
+def histograms_creation(histograms_to_select, histogram_name, time_args, upper_time_args, time_hits_args, upper_time_hits_args, lower_scale_args, upper_scale_args, all_scale_args, Nhits_args, high_Nhits_args, all_Nhit_args, threshold, mip, en_mip, MIP_scaling):
     created_histograms = {}
-    mip_value = mip["_".join(histogram_name.split("_")[1:]) + '_lower_scale']
+    mip_value = mip["_".join(histogram_name.split("_")[1:])]
     if histograms_to_select["time"]:
         hist_time = ROOT.TH1F(histogram_name + '_time', 'Time histogram - {}'.format(histogram_name), time_args[0], 6, time_args[1])
         hist_time.GetXaxis().SetTitle("Weighted Time of Subhits [ns]")
         hist_time.GetYaxis().SetTitle("Number of hits times Energy [GeV]")
         created_histograms["time"] = hist_time
+        
+    if histograms_to_select["time_high"]:
+        hist_time_high = ROOT.TH1F(histogram_name + '_time_high_scale', 'Upper-Scale Time histogram - {}'.format(histogram_name), upper_time_args[0], time_args[1], upper_time_args[1])
+        hist_time_high.GetXaxis().SetTitle("Weighted Time of Subhits [ns]")
+        hist_time_high.GetYaxis().SetTitle("Number of hits times Energy [GeV]")
+        hist_time_high.SetCanExtend(ROOT.TH1.kAllAxes)
+        created_histograms["time_high"] = hist_time_high
+        
+    if histograms_to_select["hit_time"]:
+        hist_time_hit = ROOT.TH2F(histogram_name + '_hits_duration', 'Hits Duration histogram - {}'.format(histogram_name), time_hits_args[0], time_hits_args[1], time_hits_args[2], time_hits_args[3], time_hits_args[4], time_hits_args[5])
+        hist_time_hit.GetXaxis().SetTitle("Duration of hits [ns]")
+        hist_time_hit.GetYaxis().SetTitle("Time of the 1st subhit [ns]")
+        created_histograms["hit_time"] = hist_time_hit
+        
+    if histograms_to_select["hit_time_high"]:
+        hist_time_hit_high = ROOT.TH2F(histogram_name + '_hits_duration_high', 'Upper Scale Hits-Duration histogram - {}'.format(histogram_name), upper_time_hits_args[0], time_hits_args[2], upper_time_hits_args[1], upper_time_hits_args[2], time_hits_args[4], upper_time_hits_args[3])
+        hist_time_hit_high.GetXaxis().SetTitle("Duration of hits [ns]")
+        hist_time_hit_high.GetYaxis().SetTitle("Time of the 1st subhit [ns]")
+        hist_time_hit_high.SetCanExtend(ROOT.TH2.kAllAxes)
+        created_histograms["hit_time_high"] = hist_time_hit_high
 
     if histograms_to_select["lower_scale_energy"]:
         hist_lower_scale = ROOT.TH1F(histogram_name + '_lower_scale', 'Lower-Scale Energy histogram - {}'.format(histogram_name), lower_scale_args[0], 0, lower_scale_args[1])
@@ -119,7 +139,7 @@ def histograms_creation(histograms_to_select, histogram_name, time_args, lower_s
         created_histograms["all_scale_energy"] = hist_all_energy
 
     if histograms_to_select["scaled_upper_scale_energy"]:
-        hist_scaled_upper_scale = ROOT.TH1F(histogram_name + '_scaled_upper_scale', 'Scaled Upper-Scale Energy histogram - {}'.format(histogram_name), upper_scale_args[0], (lower_scale_args[1]/mip_value), (upper_scale_args[1]/mip["_".join(histogram_name.split("_")[1:]) + '_lower_scale']))
+        hist_scaled_upper_scale = ROOT.TH1F(histogram_name + '_scaled_upper_scale', 'Scaled Upper-Scale Energy histogram - {}'.format(histogram_name), upper_scale_args[0], (lower_scale_args[1]/mip_value), (upper_scale_args[1]/mip_value))
         hist_scaled_upper_scale.GetXaxis().SetTitle("MIP")
         hist_scaled_upper_scale.GetYaxis().SetTitle("Number of hits")
         hist_scaled_upper_scale.SetCanExtend(ROOT.TH1.kAllAxes)
@@ -132,7 +152,7 @@ def histograms_creation(histograms_to_select, histogram_name, time_args, lower_s
         hist_scaled_all_scale.SetCanExtend(ROOT.TH1.kAllAxes)
         created_histograms["scaled_all_scale_energy"] = hist_scaled_all_scale
     
-    x_title_suffix_Nhits = str("{:.2e}".format(mip_value/4)) + " GeV  (MIP/4)" if en_mip else str(threshold[0]) + " GeV"
+    x_title_suffix_Nhits = str("{:.2e}".format(mip_value/float(MIP_scaling))) + " GeV  (MIP/{})".format(MIP_scaling) if en_mip else str(threshold[0]) + " GeV"
     if histograms_to_select["low_#Nhits"]:
         bin_width = Nhits_args[1] / Nhits_args[0] # Calculate the bin width
         bin_edges = [(i-0.5)*bin_width for i in range(Nhits_args[0] + 1)] # Define the bin edges
@@ -154,20 +174,20 @@ def histograms_creation(histograms_to_select, histogram_name, time_args, lower_s
         hist_all_Nhits.GetYaxis().SetTitle("Number of Events")
         hist_all_Nhits.SetCanExtend(ROOT.TH1.kAllAxes)
         created_histograms["all_#Nhits"] = hist_all_Nhits
-
+        
     return created_histograms
 
-type_names = ["time", "lower_scale_energy", "upper_scale_energy", "all_scale_energy", "scaled_upper_scale_energy", "scaled_all_scale_energy", "low_#Nhits", "high_#Nhits", "all_#Nhits"]
+type_names = ["time", "time_high", "hit_time", "hit_time_high", "lower_scale_energy", "upper_scale_energy", "all_scale_energy", "scaled_upper_scale_energy", "scaled_all_scale_energy", "low_#Nhits", "high_#Nhits", "all_#Nhits"]
 types_number = len(type_names)
 
-def appending(dictionary_of_system, system, histograms_to_select, histogram_name, histograms_lists, mip, en_mip):
+def appending(dictionary_of_system, system, histograms_to_select, histogram_name, histograms_lists, mip, en_mip, MIP_scaling):
     histograms_args = dictionary_of_system[system][2]
     
-    time_args, lower_scale_args, upper_scale_args, all_scale_args, Nhits_args, high_Nhits_args, all_Nhit_args, threshold = histograms_args
+    time_args, upper_time_args, time_hits_args, upper_time_hits_args, lower_scale_args, upper_scale_args, all_scale_args, Nhits_args, high_Nhits_args, all_Nhit_args, threshold = histograms_args
     
     histograms = histograms_creation(
         histograms_to_select, histogram_name,
-        time_args, lower_scale_args, upper_scale_args, all_scale_args, Nhits_args, high_Nhits_args, all_Nhit_args, threshold, mip, en_mip)
+        time_args, upper_time_args, time_hits_args, upper_time_hits_args, lower_scale_args, upper_scale_args, all_scale_args, Nhits_args, high_Nhits_args, all_Nhit_args, threshold, mip, en_mip, MIP_scaling)
     
     names_to_lists = zip(type_names, histograms_lists)
     
@@ -177,12 +197,22 @@ def appending(dictionary_of_system, system, histograms_to_select, histogram_name
         else:
             type_list.append(None)
 
-def histograms_for_functions(dictionary_of_system, system, function, histograms_to_select, index, first_function, mip, en_mip):
+def histograms_for_functions(dictionary_of_system, system, function, histograms_to_select, index, first_function, mip, en_mip, MIP_scaling):
     
     histograms_functions_lists = [[] for _ in range(types_number)]  
     function_dictionary_list = []
     Nhits_zeroes = []
-
+    histograms_names = []
+    
+    def appending_block(selections, hist_name):
+        function_dictionary_list.append(selections)
+        if histograms_to_select["low_#Nhits"] or histograms_to_select["high_#Nhits"] or histograms_to_select["all_#Nhits"]: 
+            Nhits_zeroes.append(0)
+        else: 
+            Nhits_zeroes.append(None)
+        appending(dictionary_of_system, system, histograms_to_select, "{}_".format(index) + hist_name, histograms_functions_lists, mip, en_mip, MIP_scaling)            
+        histograms_names.append(hist_name)
+    
     if first_function:
         staves, modules, towers, layers = dictionary_of_system[system][1]
         for stave in staves:
@@ -194,60 +224,55 @@ def histograms_for_functions(dictionary_of_system, system, function, histograms_
                         my_dict = {key: value for key, value in my_dict.items() if value != "*"}
                         for key, value in my_dict.items():
                             parsed_func_selection[key] = (map(int, value.split(':'))) if ':' in value else int(value)
-                        function_dictionary_list.append(parsed_func_selection)
-                        if histograms_to_select["low_#Nhits"] or histograms_to_select["high_#Nhits"] or histograms_to_select["all_#Nhits"]: 
-                            Nhits_zeroes.append(0)
-                        else: 
-                            Nhits_zeroes.append(None)
                         histo_name = "{system}{stave}{module}{tower}{layer}".format(system=system, 
-                                                                                                stave="_S" + stave if stave != "*" else "",
-                                                                                                module="_M" + module if module != "*" else "", 
-                                                                                                tower="_T" + tower if tower != "*" else "", 
-                                                                                                layer="_L" + layer if layer != "*" else "")
-                        appending(dictionary_of_system, system, histograms_to_select, "{}_".format(index) + histo_name, histograms_functions_lists, mip, en_mip)            
+                                                                        stave="_S" + stave if stave != "*" else "",
+                                                                        module="_M" + module if module != "*" else "", 
+                                                                        tower="_T" + tower if tower != "*" else "", 
+                                                                        layer="_L" + layer if layer != "*" else "")
+                        appending_block(parsed_func_selection, histo_name)
     else:
         function_limits = dictionary_of_system[system][3][function]
         for limit in function_limits:
             selection_string = (map(int, limit.split(':'))) if ':' in limit else int(limit)
-            function_dictionary_list.append(selection_string)
-            if histograms_to_select["low_#Nhits"] or histograms_to_select["high_#Nhits"] or histograms_to_select["all_#Nhits"]: 
-                Nhits_zeroes.append(0)
-            else: 
-                Nhits_zeroes.append(None)
-
             histo_name = "{}_{}_{}".format(system, function, limit)
-            appending(dictionary_of_system, system, histograms_to_select, "{}_".format(index) + histo_name, histograms_functions_lists, mip, en_mip)
-    
-    return histograms_functions_lists, function_dictionary_list, Nhits_zeroes
+            appending_block(selection_string, histo_name)
 
-def histograms_for_systems(dictionary_of_system, system, histograms_to_select_function, system_functions, index, mip, en_mip):
+    return histograms_functions_lists, function_dictionary_list, Nhits_zeroes, histograms_names
+
+def histograms_for_systems(dictionary_of_system, system, histograms_to_select_function, system_functions, index, mip, en_mip, MIP_scaling):
 
     histograms_systems_dictionaries = [{} for _ in range(types_number)]
     parsing_function_dictionary = {}
     Nhits_dictionary={}
+    histograms_names = {}
+    filling_functions = {}
     
     functions = system_functions[system]
     first_function = True
 
     for function in functions:
-        histograms_lists, parsing_function_dictionary[function], Nhits_dictionary[function] = histograms_for_functions(dictionary_of_system, system, function, histograms_to_select_function[function], index, first_function, mip, en_mip)
+        histograms_lists, parsing_function_dictionary[function], Nhits_dictionary[function], histograms_names[function] = histograms_for_functions(dictionary_of_system, system, function, histograms_to_select_function[function], index, first_function, mip, en_mip, MIP_scaling)
         for i in range(types_number): 
             histograms_systems_dictionaries[i][function] = histograms_lists[i]
         first_function = False
         
-    return histograms_systems_dictionaries, Nhits_dictionary, parsing_function_dictionary
+        filling_functions[function] = create_histogram_function(histograms_to_select_function[function], system, function)
+        
+    return histograms_systems_dictionaries, Nhits_dictionary, parsing_function_dictionary, histograms_names, filling_functions
 
-def name_histograms(dictionary_of_system, systems, histograms_to_select_system_function, system_functions, index, mip, en_mip):
+def name_histograms(dictionary_of_system, systems, histograms_to_select_system_function, system_functions, index, mip, en_mip, MIP_scaling):
     all_types_dictionaries = [{} for _ in range(types_number)]
     Nhits_dict = {}
     parsing_dict = {}
-
+    histograms_names = {}
+    filling_funcs = {}
+    
     for system in systems:
-        system_hisotgrams, Nhits_dict[system], parsing_dict[system] = histograms_for_systems(dictionary_of_system, system, histograms_to_select_system_function[system], system_functions, index, mip, en_mip)
+        system_hisotgrams, Nhits_dict[system], parsing_dict[system], histograms_names[system], filling_funcs[system] = histograms_for_systems(dictionary_of_system, system, histograms_to_select_system_function[system], system_functions, index, mip, en_mip, MIP_scaling)
         for i in range(types_number):
             all_types_dictionaries[i][system] = system_hisotgrams[i]
 
-    return all_types_dictionaries, Nhits_dict, parsing_dict
+    return all_types_dictionaries, Nhits_dict, parsing_dict, histograms_names, filling_funcs
 
 ###########################################################################################################
 
@@ -272,15 +297,135 @@ def selecting(function_dict, funcion_name, func_selection, is_endcap, decoded_hi
         values_same = func(func_selection, is_endcap, decoded_hit)
     return values_same
 
-def fill_histogram(dictionary_of_system, systems, collections, function_dict, system_functions, mip, en_mip, histograms_to_select_dict, indexo, slcio_file,  ev_start, ev_stop):
+
+def create_histogram_function(histograms_to_select, system, function):
+    function_name = "process_hits_{}_{}".format(system, function)
+    function_body = """
+def {}(system, function, hist_time, hist_time_high, hist_time_hit, upper_hist_time_hit, hist_lower_scale,
+    hist_upper_scale, hist_energy, scaled_hist_upper_scale, scaled_hist_energy, function_selection, index, Nhits,
+    threshold, low_energy_threshold, low_time_threshold, hit_duration_low_threshold, time_start,
+    energy, MIP_scaled_energy, subhit_information):
+    """.format(function_name)
+        
+    if histograms_to_select["low_#Nhits"] or histograms_to_select["high_#Nhits"] or histograms_to_select["all_#Nhits"]:
+        function_body += """
+    if energy > threshold:
+        Nhits[system][function][index] += 1
+    """
+        
+    if histograms_to_select["lower_scale_energy"] and histograms_to_select["upper_scale_energy"]:
+        function_body += """
+    if energy < low_energy_threshold:
+        hist_lower_scale.Fill(energy)
+    else:
+        hist_upper_scale.Fill(energy)
+    """
+        if histograms_to_select["scaled_upper_scale_energy"]:
+            function_body += """
+        scaled_hist_upper_scale.Fill(MIP_scaled_energy)
+        """    
+    elif histograms_to_select["lower_scale_energy"]:
+        function_body += """
+    if energy < low_energy_threshold:
+        hist_lower_scale.Fill(energy)
+    """
+        if histograms_to_select["scaled_upper_scale_energy"]:
+            function_body += """
+    else:
+        scaled_hist_upper_scale.Fill(MIP_scaled_energy)
+    """    
+    elif histograms_to_select["upper_scale_energy"]:
+        function_body += """
+    if energy > low_energy_threshold:
+        hist_upper_scale.Fill(energy)
+    """
+        if histograms_to_select["scaled_upper_scale_energy"]:
+            function_body += """
+        scaled_hist_upper_scale.Fill(MIP_scaled_energy)
+        """       
     
-    histograms_dicts, hits_dict, parsing_dicts = name_histograms(dictionary_of_system, systems, histograms_to_select_dict, system_functions, indexo, mip, en_mip)
-    time_histograms, lower_scale_histograms, upper_scale_histograms, energy_histograms, scaled_upper_scale_histograms, scaled_energy_histograms,  Nhits_histograms, high_Nhits_histograms, all_Nhits_histograms = histograms_dicts
+    if histograms_to_select["all_scale_energy"]:
+        function_body += """
+    hist_energy.Fill(energy)
+    """
+                                  
+    if histograms_to_select["scaled_all_scale_energy"]:
+        function_body += """
+    scaled_hist_energy.Fill(MIP_scaled_energy)
+    """
+
+    time_flag = True
+    
+    if histograms_to_select["hit_time"] or histograms_to_select["hit_time_high"]:
+        time_flag = False
+        function_body += """
+    subhit_max = -float("inf")
+    subhit_min = float("inf")
+    for subhit in subhit_information:
+        if subhit.time > subhit_max : subhit_max = subhit.time
+        if subhit.time < subhit_min : subhit_min = subhit.time
+    """
+    
+    
+    if time_flag and (histograms_to_select["time"] or histograms_to_select["time_high"]):
+        function_body += """
+    for subhit in subhit_information:
+    """
+            
+    
+    
+    if histograms_to_select["time"] and histograms_to_select["time_high"]:
+        function_body += """
+        if subhit.time <= low_time_threshold:
+            hist_time.Fill(subhit.time, subhit.energy)
+        else:
+            hist_time_high.Fill(subhit.time, subhit.energy)
+        """  
+    elif histograms_to_select["time"]:
+        function_body += """
+        if subhit.time <= low_time_threshold:
+            hist_time.Fill(subhit.time, subhit.energy)
+        """
+    elif histograms_to_select["time_high"]:
+        function_body += """
+        if subhit.time > low_time_threshold:
+            hist_time_high.Fill(subhit.time, subhit.energy)
+        """  
+    
+    
+    
+    if histograms_to_select["hit_time"] and histograms_to_select["hit_time_high"]:
+        function_body += """
+    hit_duration = subhit_max-subhit_min
+    if hit_duration < hit_duration_low_threshold:
+        hist_time_hit.Fill(hit_duration, subhit_min)
+    elif hit_duration > hit_duration_low_threshold and subhit_min > time_start:
+        upper_hist_time_hit.Fill(hit_duration, subhit_min)    
+    """
+    elif histograms_to_select["hit_time"]:
+        function_body += """
+    hit_duration = subhit_max-subhit_min
+    if hit_duration < hit_duration_low_threshold:
+        hist_time_hit.Fill(hit_duration, subhit_min)
+    """
+    elif histograms_to_select["hit_time_high"]:    
+        function_body += """
+    hit_duration = subhit_max-subhit_min
+    if hit_duration > hit_duration_low_threshold and subhit_min > time_start:
+        upper_hist_time_hit.Fill(hit_duration, subhit_min)  
+    """
+    local_vars = {}
+    exec(function_body, globals(), local_vars)
+    return local_vars[function_name]
+
+def fill_histogram(dictionary_of_system, systems, collections, function_dict, system_functions, mip, en_mip, MIP_scaling, histograms_to_select_dict, indexo, slcio_file,  ev_start, ev_stop):
+    
+    histograms_dicts, hits_dict, parsing_dicts, histograms_names, fill_funcs = name_histograms(dictionary_of_system, systems, histograms_to_select_dict, system_functions, indexo, mip, en_mip, MIP_scaling)
+    time_histograms, time_high_histograms, time_hits_histograms, upper_time_hits_histograms, lower_scale_histograms, upper_scale_histograms, energy_histograms, scaled_upper_scale_histograms, scaled_energy_histograms,  Nhits_histograms, high_Nhits_histograms, all_Nhits_histograms = histograms_dicts
     reader = LcioReader.LcioReader(slcio_file)
     No_events = reader.getNumberOfEvents()
     if ev_stop < 0:
         ev_stop = No_events + ev_stop + 1
-    
     for i, event in enumerate(reader):
         if i < ev_start:
             continue
@@ -302,17 +447,28 @@ def fill_histogram(dictionary_of_system, systems, collections, function_dict, sy
             for hit in calo_hits:
                 decoded_hit = decoding(id_decoder, hit, is_endcap)
                 energy = hit.getEnergy()
+                
                 subhit_information = subhit_decoding(hit)
                 
                 for system in systems:
                     system_material = dictionary_of_system[system]
-                    if collection_name not in system_material[0]:
+                    collections_per_system = system_material[0]
+                    custom_energy_threshold = system_material[2][10][0]
+                    low_energy_threshold = system_material[2][4][1]
+                    low_time_threshold = system_material[2][0][1]
+                    hit_duration_low_threshold = system_material[2][2][2]
+                    time_start = system_material[2][2][4]
+                    if collection_name not in collections_per_system:
                         continue
                     functions = system_functions[system]
                     for function in functions:
-                        histograms_to_select = histograms_to_select_dict[system][function]
+                        filling_func = fill_funcs[system][function]
                         iterable_histograms = zip(
-                        time_histograms[system][function], 
+                        histograms_names[system][function],
+                        time_histograms[system][function],
+                        time_high_histograms[system][function],
+                        time_hits_histograms[system][function],
+                        upper_time_hits_histograms[system][function], 
                         lower_scale_histograms[system][function],
                         upper_scale_histograms[system][function],
                         energy_histograms[system][function],
@@ -320,57 +476,33 @@ def fill_histogram(dictionary_of_system, systems, collections, function_dict, sy
                         scaled_energy_histograms[system][function], 
                         parsing_dicts[system][function], 
                         enumerate(Nhits[system][function]))
-                        for hist_time, hist_lower_scale, hist_upper_scale, hist_energy, scaled_hist_upper_scale, scaled_hist_energy, function_selection, (index, Nhit) in iterable_histograms:
+                        for hist_name, hist_time, hist_time_high, hist_time_hit, upper_hist_time_hit, hist_lower_scale, hist_upper_scale, hist_energy, scaled_hist_upper_scale, scaled_hist_energy, function_selection, (index, Nhit) in iterable_histograms:
+                            MIP_value = mip[hist_name]
+                            threshold = (MIP_value/MIP_scaling) if en_mip else custom_energy_threshold
+                            MIP_scaled_energy = energy/MIP_value
                             if selecting(function_dict, function, function_selection, is_endcap, decoded_hit):
-                                
-                                #Number-of-cells-with-energy-above-threshold-per-cell histogram
-                                threshold = (mip["_".join(hist_lower_scale.GetName().split("_")[1:])]/4) if en_mip else system_material[2][7][0]       #The energy threshold can be MIP/4 or given as a different input for every system in the dictionary of systems
-                                if (histograms_to_select["low_#Nhits"] or histograms_to_select["high_#Nhits"] or histograms_to_select["all_#Nhits"]) and energy > threshold:
-                                    Nhits[system][function][index] += 1
-                                
-                                #Lower-scale histogram
-                                if histograms_to_select["lower_scale_energy"] and 0 <= energy < system_material[2][1][1]:
-                                    hist_lower_scale.Fill(energy)
-                                
-                                #upper-scale histogram
-                                if histograms_to_select["upper_scale_energy"] and energy > system_material[2][1][1]:
-                                    hist_upper_scale.Fill(energy)
-                                
-                                #all energy histogram
-                                if histograms_to_select["all_scale_energy"]:
-                                    hist_energy.Fill(energy)
-
-                                #scaled upper-scale histogram
-                                if histograms_to_select["scaled_upper_scale_energy"] and energy > system_material[2][1][1]:
-                                    scaled_hist_upper_scale.Fill(energy/(mip["_".join(hist_lower_scale.GetName().split("_")[1:])]))
-                                
-                                #scaled all energy histogram
-                                if histograms_to_select["scaled_all_scale_energy"]:
-                                    scaled_hist_energy.Fill(energy/(mip["_".join(hist_lower_scale.GetName().split("_")[1:])]))
-
-                                #time histogram
-                                if histograms_to_select["time"]:
-                                    for subhit in subhit_information:
-                                        hist_time.Fill(subhit.time, subhit.energy)
+                                filling_func(system, function, hist_time, hist_time_high, hist_time_hit, upper_hist_time_hit, hist_lower_scale,
+                                hist_upper_scale, hist_energy, scaled_hist_upper_scale, scaled_hist_energy, function_selection, index, Nhits,
+                                threshold, low_energy_threshold, low_time_threshold, hit_duration_low_threshold, time_start, energy, MIP_scaled_energy, subhit_information)
         for system in systems:
             system_material = dictionary_of_system[system]
+            Nhit_low_threshold = system_material[2][7][1]
             functions = system_functions[system]          
             for function in functions:
                 histograms_to_select = histograms_to_select_dict[system][function]
                 iterable_histograms = zip(Nhits[system][function], Nhits_histograms[system][function], high_Nhits_histograms[system][function], all_Nhits_histograms[system][function])
                 for Nhit, hist_Nhits, hist_high_Nhits, hist_all_Nhits in iterable_histograms:
                     #Lower-scale histogram of #hits
-                    if histograms_to_select["low_#Nhits"] and Nhit <= system_material[2][4][1]:
+                    if histograms_to_select["low_#Nhits"] and Nhit <= Nhit_low_threshold:
                         hist_Nhits.Fill(Nhit)
                     #Upper-scale histogram of #hits
-                    if histograms_to_select["high_#Nhits"] and Nhit > system_material[2][4][1]:
+                    if histograms_to_select["high_#Nhits"] and Nhit > Nhit_low_threshold:
                         hist_high_Nhits.Fill(Nhit)
                     #all-scale histogram of #hits
                     if histograms_to_select["all_#Nhits"]:
                         hist_all_Nhits.Fill(Nhit)
                     
-
-    return [time_histograms, lower_scale_histograms, upper_scale_histograms, energy_histograms, scaled_upper_scale_histograms, scaled_energy_histograms,  Nhits_histograms, high_Nhits_histograms, all_Nhits_histograms]
+    return [time_histograms, time_high_histograms, time_hits_histograms, upper_time_hits_histograms, lower_scale_histograms, upper_scale_histograms, energy_histograms, scaled_upper_scale_histograms, scaled_energy_histograms,  Nhits_histograms, high_Nhits_histograms, all_Nhits_histograms]
 
 ###########################################################################################################
 
@@ -378,30 +510,44 @@ def fill_histogram(dictionary_of_system, systems, collections, function_dict, sy
 
 ###########################################################################################################
 
-def find_max_range(histograms):
-    max_range = 0
-    for hist in histograms:
-        maximum = hist.GetXaxis().GetXmax()
-        if maximum > max_range:
-            max_range = maximum
+def find_max_range(histograms, axis="x"):
+    max_range = -float("inf")
+    if axis == "x":
+        for hist in histograms:
+            maximum = hist.GetXaxis().GetXmax()
+            if maximum > max_range:
+                max_range = maximum
+    elif axis == "y":
+        for hist in histograms:
+            maximum = hist.GetYaxis().GetXmax()
+            if maximum > max_range:
+                max_range = maximum
     return max_range
 
-def merge_histograms(histograms, can_extend = True):
+def merge_histograms(histograms, dim, can_extend = True):
     """The histograms' properties are all similar. 
     That is why I retrieve the information from the first histogram (any other histogram would yield identical results).
     The only difference in the maximum range if the histogram can extend such as in the case of the upper-energy scale and number-of-hits-above-threshold histograms.
     For that difference, we apply find_max_range if the optional parameter can_extend is set True"""
     
-    maximum = find_max_range(histograms) if can_extend else histograms[0].GetXaxis().GetXmax()
-    minimum = histograms[0].GetXaxis().GetXmin()
+    maximum_x = find_max_range(histograms) if can_extend else histograms[0].GetXaxis().GetXmax()
+    minimum_x = histograms[0].GetXaxis().GetXmin()
+    binsx_number = histograms[0].GetXaxis().GetNbins()
+    if dim == 2:
+        maximum_y = find_max_range(histograms, "y") if can_extend else histograms[0].GetYaxis().GetXmax()
+        minimum_y = histograms[0].GetYaxis().GetXmin()
+        binsy_number = histograms[0].GetYaxis().GetNbins()
     name = "_".join(histograms[0].GetName().split("_")[1:])
     title = "_".join(histograms[0].GetTitle().split("_")[1:])
-    bins_number = histograms[0].GetXaxis().GetNbins()
+    
 
     x_title = histograms[0].GetXaxis().GetTitle()
     y_title = histograms[0].GetYaxis().GetTitle()
 
-    master_hist = ROOT.TH1F(name, title, bins_number, minimum, maximum)
+    if dim == 1: 
+        master_hist = ROOT.TH1F(name, title, binsx_number, minimum_x, maximum_x)
+    else:
+        master_hist = ROOT.TH2F(name, title, binsx_number, minimum_x, maximum_x, binsy_number, minimum_y, maximum_y)
     master_hist.GetXaxis().SetTitle(x_title)
     master_hist.GetYaxis().SetTitle(y_title)
 
@@ -440,7 +586,8 @@ def merging(number_of_processes, systems, system_functions, histograms_to_select
                 for k, type_name in enumerate(type_names):
                     if histograms_to_select_dict[system][function][type_name]:
                         # can_extend = False if k in [0,1,2,6] else True
-                        merged_type_histogram = merge_histograms(histograms_to_merge[k])   
+                        dim = 2 if type_name in ["hit_time", "hit_time_high"] else 1
+                        merged_type_histogram = merge_histograms(histograms_to_merge[k], dim)   
                         merged_all_histos[k].append(merged_type_histogram)
                     else:
                         merged_all_histos[k].append(None)
@@ -459,13 +606,13 @@ def merging(number_of_processes, systems, system_functions, histograms_to_select
 
 def process_file(args):
     try:
-        dictionary_of_system, systems, collections, function_dict, system_functions, mip, en_mip, histograms_to_select_dict, indexo, slcio_file, ev_start, ev_stop = args
-        return fill_histogram(dictionary_of_system, systems, collections, function_dict, system_functions, mip, en_mip, histograms_to_select_dict, indexo, slcio_file, ev_start, ev_stop)
+        dictionary_of_system, systems, collections, function_dict, system_functions, mip, en_mip, MIP_scaling, histograms_to_select_dict, indexo, slcio_file, ev_start, ev_stop = args
+        return fill_histogram(dictionary_of_system, systems, collections, function_dict, system_functions, mip, en_mip, MIP_scaling, histograms_to_select_dict, indexo, slcio_file, ev_start, ev_stop)
     except Exception as e:
         # print("Error processing {}: {}".format(args, e))
         traceback.print_exc() 
-def execute_parallel_processing(dictionary_of_system, systems, collections, function_dict, system_functions, mip, histograms_to_select_dict, slcio_file_list, ev_start_list, ev_stop_list, en_mip=True):
-    arguments = [(dictionary_of_system, systems, collections, function_dict, system_functions, mip, en_mip, histograms_to_select_dict, indexo, slcio_file, ev_start, ev_stop) 
+def execute_parallel_processing(dictionary_of_system, systems, collections, function_dict, system_functions, mip, histograms_to_select_dict, slcio_file_list, ev_start_list, ev_stop_list, en_mip=True, MIP_scaling=2):
+    arguments = [(dictionary_of_system, systems, collections, function_dict, system_functions, mip, en_mip, MIP_scaling, histograms_to_select_dict, indexo, slcio_file, ev_start, ev_stop) 
              for indexo, (slcio_file, ev_start, ev_stop) in enumerate(zip(slcio_file_list, ev_start_list, ev_stop_list))]
     pool = multiprocessing.Pool()
     try:
@@ -494,8 +641,15 @@ def saving_histogram(histo_dir, canvas, type_name, type_dict, func_dir, system, 
     
     for hist in type_dict[system][function]:
         canvas.SetLogy(1) if type_name in ["upper_scale_energy", "all_scale_energy", "scaled_upper_scale_energy", "scaled_all_scale_energy", "high_#Nhits", "all_#Nhits"] else canvas.SetLogy(0)
-        hist.Draw("HIST")
+        if type_name in ["hit_time", "hit_time_high"]:
+            hist.Draw("COLZ")
+            canvas.Update()
+            canvas.Modified()
+        else:
+            hist.Draw("HIST")
         canvas.SaveAs(directory_type_name_dir + "/{}".format(hist.GetName()) + ".pdf")
+        existing_hist = ROOT.gDirectory.Get(hist.GetName())
+        if existing_hist:ROOT.gDirectory.Delete(hist.GetName() + ";*")  # Delete all versions
         hist.Write()
         # Explicitly delete the histogram after writing to ROOT file and saving to PDF
         hist.Delete()

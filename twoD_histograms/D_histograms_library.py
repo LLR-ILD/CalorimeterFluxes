@@ -88,20 +88,23 @@ def decoding(histogram):
 ##################################################################################################################################################
 
 """A function to read off the histograms structure from the root file and build the very same hierarchical structure. 
-"""
+""" 
 def get_histograms(file):
 
     histogram_dictionary = OrderedDict()
+    stats_dict = OrderedDict()
     systems = file.GetListOfKeys()
     
     for system in systems:
         system_name = system.GetName()
-        histogram_dictionary[system_name] = OrderedDict()  # Create a new dictionary for this system
+        histogram_dictionary[system_name]= OrderedDict()  # Create a new dictionary for this system
+        stats_dict[system_name] = OrderedDict()
         functions = system.ReadObj().GetListOfKeys()
 
         for function in functions:
             function_name = function.GetName()
             histogram_dictionary[system_name][function_name] = OrderedDict()  # Create a new dictionary for this function
+            stats_dict[system_name][function_name] = OrderedDict()  # Create a new dictionary for this function
             histogram_sets = function.ReadObj().GetListOfKeys()
             
             for histogram_type in histogram_sets:
@@ -117,8 +120,12 @@ def get_histograms(file):
                 if function == "no_function":
                     histograms_list = sorted(histograms_list, key=histogram_sort_key)
                 histogram_dictionary[system_name][function_name][histogram_type_name] = histograms_list
+                stats_dict[system_name][function_name][histogram_type_name] = []
+                for hist in histograms_list:
+                    stats_list=[hist.GetMean(), hist.GetStdDev(), hist.Integral()]
+                    stats_dict[system_name][function_name][histogram_type_name].append(stats_list)
     file.Close()
-    return histogram_dictionary
+    return histogram_dictionary, stats_dict
 
 """ A function that reads off the x-axis titles from the histograms.
 """
@@ -209,23 +216,48 @@ def get_min_max(histograms_list):
         overall_max = 1e3  # Example default value
     return overall_min, overall_max
 
-def make_histogram(histogram_dictionary, histogram_selection_dictionary, histograms_x_titles, selected_histogram_list_type_for_element,  histos_names, system, function, histogram_type, element=None, element_selection = None):
+def get_secondary_stat(hist, secondary):
+    
+    if not secondary:
+        stats = [hist.GetMean(), hist.GetStdDev(), hist.Integral()]
+    else:
+        stats_box = hist.GetListOfFunctions().FindObject("stats")
+        text_list = stats_box.GetListOfLines()
+        iterator = text_list.MakeIterator()
+        item = iterator.Next()
+        while item:
+            text_content = item.GetTitle()
+            if "Mean" in text_content:
+                mean_value = float(text_content.split()[1])
+            elif "Std Dev" in text_content:
+                std_dev_value = float(text_content.split()[2])
+            elif "Entries" in text_content:
+                entries = float(text_content.split()[1])
+            item = iterator.Next()
+        stats = [mean_value, std_dev_value, entries]
+        
+    return stats
+
+def make_histogram(histogram_dictionary, histogram_selection_dictionary, histograms_x_titles, selected_histogram_list_type_for_element,  histos_names, system, function, histogram_type, secondary_types=[], element=None, element_selection = None):
     min_bin_value = min([hist.GetXaxis().GetXmin() for hist in selected_histogram_list_type_for_element])
     max_bin_value = max([hist.GetXaxis().GetXmax() for hist in selected_histogram_list_type_for_element])
     max_bins_type = max([hist.GetNbinsX() for hist in selected_histogram_list_type_for_element])
+    oneD_histos_stats = []
     if function == "no_function" and len(histogram_selection_dictionary[system][function].keys()) != 0 and len(histogram_selection_dictionary[system][function].keys()) != 1:
         hist_2d_type = ROOT.TH2F("{}_{}_{}_{}_{}".format(system, function, histogram_type, element, element_selection), "{} {} {} {}".format(system, histogram_type, element, element_selection), len(selected_histogram_list_type_for_element), 0, len(selected_histogram_list_type_for_element), max_bins_type, min_bin_value, max_bin_value)
     else:
         hist_2d_type = ROOT.TH2F("{}_{}_{}".format(system, function, histogram_type), "{}_{}_{}".format(system, function, histogram_type), len(histogram_dictionary[system][function][histogram_type]), 0, len(histogram_dictionary[system][function][histogram_type]), max_bins_type, min_bin_value, max_bin_value)
     hist_2d_type.GetYaxis().SetTitle(histograms_x_titles[system][histogram_dictionary[system][function].keys().index(histogram_type)])
+    secondary = histogram_type in secondary_types
     for i, hist in enumerate(selected_histogram_list_type_for_element):
         hist_2d_type.GetXaxis().SetBinLabel(i+1, histos_names[i])
+        oneD_histos_stats.append(get_secondary_stat(hist, secondary))
         for bin in range(1, hist.GetNbinsX() + 1):
             hist_2d_type.Fill(i, hist.GetBinCenter(bin), hist.GetBinContent(bin))
     # print(system, get_min(selected_histogram_list_type_for_element))
     hist_2d_type.SetMinimum(get_min_max(selected_histogram_list_type_for_element)[0])
     hist_2d_type.SetMaximum(get_min_max(selected_histogram_list_type_for_element)[1])
-    return hist_2d_type
+    return hist_2d_type, oneD_histos_stats
 
 def product_of_keys_lengths(keys_element, dictionary):
     for key in keys_element:
@@ -236,10 +268,11 @@ def product_of_keys_lengths(keys_element, dictionary):
         product_of_lengths_element = product_of_lengths_element*lengths_element[i]
     return product_of_lengths_element
 
-def create_histogram(twoDD_histograms, histogram_dictionary, histograms_x_titles, histogram_selection_dictionary, Bin_labelss, system, function, histogram_type, element=None):
+def create_histogram(twoDD_histograms, oneDD_stats, histogram_dictionary, histograms_x_titles, histogram_selection_dictionary, Bin_labelss, system, function, histogram_type, secondary_types=[], element=None):
     names = []
     hist_2d_list = []
-
+    oneD_stats_list = []
+    
     if function == "no_function" and len(histogram_selection_dictionary[system][function].keys()) != 0 and len(histogram_selection_dictionary[system][function].keys()) != 1:
 
         selection_dict_for_length_before = copy.deepcopy(histogram_selection_dictionary[system][function])
@@ -263,8 +296,11 @@ def create_histogram(twoDD_histograms, histogram_dictionary, histograms_x_titles
         for k, element_selection in enumerate(element_selections):                            
             new_list = [histogram_dictionary[system][function][histogram_type][(product_of_lengths_after_element*n) + ((k*product_of_lengths_after_element)/element_length):(product_of_lengths_after_element*n) + ((k*product_of_lengths_after_element)/element_length) + product_of_lengths_after_element/element_length] for n in range(product_of_lengths_before_element)]
             selected_histogram_list_type_per_element = [item for sublist in new_list for item in sublist]
-            hist_2d_list.append(make_histogram(histogram_dictionary, histogram_selection_dictionary, histograms_x_titles, selected_histogram_list_type_per_element,  names, system, function, histogram_type, element, element_selection))
+            hist_twoD, one_Dstat = make_histogram(histogram_dictionary, histogram_selection_dictionary, histograms_x_titles, selected_histogram_list_type_per_element,  names, system, function, histogram_type, secondary_types, element, element_selection)
+            hist_2d_list.append(hist_twoD)
+            oneD_stats_list.append(one_Dstat)
             twoDD_histograms[system][function][histogram_type][element] = hist_2d_list
+            oneDD_stats[system][function][histogram_type][element] = oneD_stats_list
     else:
         if function == "no_function" and len(histogram_selection_dictionary[system][function].keys()) == 1:
             for selecto in Bin_labelss[system]:
@@ -279,27 +315,30 @@ def create_histogram(twoDD_histograms, histogram_dictionary, histograms_x_titles
                 names.append(name)
             names = sorted(names, key=extract_ranges_functions)
         selected_histogram_list_type_per_element = histogram_dictionary[system][function][histogram_type]
-        hist_2d_list.append(make_histogram(histogram_dictionary, histogram_selection_dictionary, histograms_x_titles, selected_histogram_list_type_per_element, names, system, function, histogram_type))
-        twoDD_histograms[system][function][histogram_type] = hist_2d_list 
+        hist_twoD, one_Dstat = make_histogram(histogram_dictionary, histogram_selection_dictionary, histograms_x_titles, selected_histogram_list_type_per_element, names, system, function, histogram_type, secondary_types)
+        hist_2d_list.append(hist_twoD)
+        oneD_stats_list.append(one_Dstat)
+        twoDD_histograms[system][function][histogram_type] = hist_2d_list
+        oneDD_stats[system][function][histogram_type] = oneD_stats_list 
 
-def all_histograms(histogram_dictionary, histograms_x_titles, histogram_selection_dictionary, Bin_labels, systems, system_functions):
-    twoD_histograms = {}
+def all_histograms(histogram_dictionary, histograms_x_titles, histogram_selection_dictionary, Bin_labels, systems, system_functions, secondary_types=[]):
+    twoD_histograms, oneD_stats = {}, {}
 
     for system in systems:
-        twoD_histograms[system] = {}
+        twoD_histograms[system], oneD_stats[system] = {}, {}
         functions = system_functions[system]  
         for function in functions:
-            twoD_histograms[system][function]= {}
+            twoD_histograms[system][function], oneD_stats[system][function]= {}, {}
             histogram_types = histogram_dictionary[system][function].keys()
             for histogram_type in histogram_types:
                 if function == "no_function" and len(histogram_selection_dictionary[system][function].keys()) != 0 and len(histogram_selection_dictionary[system][function].keys()) != 1:
-                    twoD_histograms[system][function][histogram_type]= {}
+                    twoD_histograms[system][function][histogram_type], oneD_stats[system][function][histogram_type]= {}, {}
                     for element in histogram_selection_dictionary[system][function].keys():
-                        create_histogram(twoD_histograms, histogram_dictionary, histograms_x_titles, histogram_selection_dictionary, Bin_labels, system, function, histogram_type, element)
+                        create_histogram(twoD_histograms, oneD_stats, histogram_dictionary, histograms_x_titles, histogram_selection_dictionary, Bin_labels, system, function, histogram_type, secondary_types, element)
                 else:
-                    twoD_histograms[system][function][histogram_type] = []
-                    create_histogram(twoD_histograms, histogram_dictionary, histograms_x_titles, histogram_selection_dictionary, Bin_labels, system, function, histogram_type)
-    return twoD_histograms
+                    twoD_histograms[system][function][histogram_type], oneD_stats[system][function][histogram_type] = [], []
+                    create_histogram(twoD_histograms, oneD_stats, histogram_dictionary, histograms_x_titles, histogram_selection_dictionary, Bin_labels, system, function, histogram_type, secondary_types)
+    return twoD_histograms, oneD_stats
 
 ##################################################################################################################################################
 
@@ -307,64 +346,49 @@ def all_histograms(histogram_dictionary, histograms_x_titles, histogram_selectio
 
 ##################################################################################################################################################
 
-def saving_histogram(histogram_list, save_dir, histograms_y_titles, histo_type, canvas, entries, units, log=False, stats=False):
+def saving_histogram(histogram_list, stats_list, save_dir, histograms_y_titles, histo_type, canvas, entries, units, log, stats):
     if log: 
         canvas.SetLogz(1) # A flag that changes the scale to logarithmic if needed
     else:
         canvas.SetLogz(0)
-    for histogram in histogram_list:
+    for n, histogram in enumerate(histogram_list):
         histogram.SetStats(0)  # Remove the statistics box
         histogram.Draw("COLZ")
         canvas.Update()  # Update the canvas to ensure the palette is created
-
-    for histogram in histogram_list:
-        histogram.SetStats(0)
-        histogram.Draw("COLZ")
-        canvas.Update()  # Update the canvas to ensure the palette is created
-
+        
         stats_boxes = []  # List to hold TPaveText objects
-
+        
         if stats:
             xbins_number = histogram.GetNbinsX()
             xmin, xmax = histogram.GetXaxis().GetXmin(), histogram.GetXaxis().GetXmax()  # Get X-axis range
             xrange = xmax - xmin  # Calculate the X-axis range
             ymin, ymax = histogram.GetYaxis().GetXmin(), histogram.GetYaxis().GetXmax()  # Get Y-axis range
             yrange = ymax - ymin  # Calculate the Y-axis range
-            for xbin in range(1, xbins_number + 1):
-                # Project the Y-bins for this X-bin slice
-                proj_name = "proj_{}".format(xbin)
-                histogram.GetXaxis().SetRange(xbin, xbin)
-                hist_proj_y = histogram.ProjectionY(proj_name, xbin, xbin)
-
+            
+            stats_per_2Dhistogram = stats_list[n]
+            for m, oneD_stat in enumerate(stats_per_2Dhistogram):
                 # Create a TPaveText to display the stats
-                x1NDC = (((xbin*xrange)/xbins_number) - 1) + xmin
-                x2NDC = (((xbin*xrange)/xbins_number)) + xmin
+                x1NDC = ((((m+1)*xrange)/xbins_number) - 1) + xmin
+                x2NDC = ((((m+1)*xrange)/xbins_number)) + xmin
                 y1NDC = -0.3*yrange + ymin
                 y2NDC = -0.1*yrange + ymin
                 stats_box = ROOT.TPaveText(x1NDC, y1NDC, x2NDC, y2NDC)
                 
                 # Calculate statistics for this projection
-                mean = hist_proj_y.GetMean()
-                stddev = hist_proj_y.GetStdDev()
-                sum_bin_contents = hist_proj_y.Integral()  # Get the sum of the bin contents
+                mean, stddev, sum_bin_contents = oneD_stat[0], oneD_stat[1], oneD_stat[2]
                 stats_box.AddText("Mean: {:.2e} {}".format(mean,units[histo_type]))
                 stats_box.AddText("Std Dev: {:.2e} {}".format(stddev,units[histo_type]))
                 stats_box.AddText("{}: {:.2e}".format(entries[histo_type],sum_bin_contents))
-                stats_box.SetTextSize(0.02)  # Adjust font size as needed
-
+                stats_box.SetTextSize(0.03)  # Adjust font size as needed                
                 stats_boxes.append(stats_box)  # Add to list to maintain scope
-
-            # Reset the X-axis range
-            histogram.GetXaxis().SetRange(1, histogram.GetNbinsX())
-
+                 
         # Draw the stats boxes after histogram
         for box in stats_boxes:
             box.Draw()
-
         # Update canvas to reflect the drawn stats boxes
         canvas.Modified()
-        canvas.Update()
- 
+        canvas.Update()    
+        
         palette = histogram.GetListOfFunctions().FindObject("palette")
         if palette:
             x1 = palette.GetX1NDC()
@@ -386,10 +410,12 @@ def saving_histogram(histogram_list, save_dir, histograms_y_titles, histo_type, 
         canvas.Modified()  # Apply the modifications
         canvas.Update()  # Update the canvas again to reflect the changes
         canvas.SaveAs("{}/{}{}".format(save_dir, histogram.GetName(), ".pdf"))
+        existing_hist = ROOT.gDirectory.Get(histogram.GetName())
+        if existing_hist:ROOT.gDirectory.Delete(histogram.GetName() + ";*")  # Delete all versions
         histogram.Write()
         histogram.Delete()
 
-def write_histograms(twoD_histograms, histogram_selection_dictionary, histograms_y_titles, dir, canvas, entries, units, log=False, stats=False):
+def write_histograms(twoD_histograms, stats_dict, histogram_selection_dictionary, histograms_y_titles, dir, canvas, entries, units, log=False, stats=False):
     if not os.path.exists(dir):os.makedirs(dir)
     myfile = ROOT.TFile(dir + '/all.root', 'UPDATE')
     for system in twoD_histograms.keys():
@@ -425,7 +451,8 @@ def write_histograms(twoD_histograms, histogram_selection_dictionary, histograms
                         element_dir = "{}/{}".format(histo_type_dir, element)
                         if not os.path.exists(element_dir): os.makedirs(element_dir)
                         histogram_list = twoD_histograms[system][function][histo_type][element]
-                        saving_histogram(histogram_list, element_dir, histograms_y_titles, histo_type, canvas, entries, units, log, stats)
+                        stats_list = stats_dict[system][function][histo_type][element]
+                        saving_histogram(histogram_list, stats_list, element_dir, histograms_y_titles, histo_type, canvas, entries, units, log, stats)
             else:
                 for histo_type in twoD_histograms[system][function].keys():
                     if not func_dir_root.GetDirectory(histo_type): # Check if the directory exists
@@ -435,6 +462,7 @@ def write_histograms(twoD_histograms, histogram_selection_dictionary, histograms
                     histo_type_dir_root.cd()
                     histo_type_dir = "{}/{}".format(func_dir, histo_type)
                     if not os.path.exists(histo_type_dir): os.makedirs(histo_type_dir)
-                    histogram_list = twoD_histograms[system][function][histo_type] 
-                    saving_histogram(histogram_list, histo_type_dir, histograms_y_titles, histo_type, canvas, entries, units, log, stats)
+                    histogram_list = twoD_histograms[system][function][histo_type]
+                    stats_list = stats_dict[system][function][histo_type] 
+                    saving_histogram(histogram_list, stats_list, histo_type_dir, histograms_y_titles, histo_type, canvas, entries, units, log, stats)
     myfile.Close()

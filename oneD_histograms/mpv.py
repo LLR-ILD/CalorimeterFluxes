@@ -1,7 +1,7 @@
 import ROOT
 import os
 import sys
-from CalorimeterFluxes.twoD_histograms.D_histograms_library import get_histograms
+from twoD_histograms.D_histograms_library import get_histograms
 
 root_file_path = sys.argv[1]
 histo_dir = sys.argv[2]
@@ -43,9 +43,10 @@ system_bounds = {"RPCHCalBarrel":[0.2e-6,1.2e-6], "RPCHCalEndcap":[0.2e-6,1.2e-6
 myfile = ROOT.TFile(histo_dir + '/all.root', 'UPDATE')
 canvas = ROOT.TCanvas("canvas", "canvas", 900, 600)
 mpv = {}
+suffix = '_lower_scale'
 
-# systems = system_bounds.keys()
-systems = ["RPCHCalECRing"]
+systems = system_bounds.keys()
+# systems = ["RPCHCalECRing"]
 for system in systems:
     sys_dir = myfile.mkdir(system)
     functions = histograms[system].keys()
@@ -57,7 +58,10 @@ for system in systems:
         energy_histograms = histograms[system][function]["lower_scale_energy"]
         for histogram in energy_histograms:
             minimum, maximum = system_bounds[system][0], system_bounds[system][1]
-            mpv[histogram.GetName()] = find_mpv(histogram, minimum, maximum)
+            hist_name = histogram.GetName()
+            if hist_name.endswith(suffix):
+                hist_name = hist_name[:-len(suffix)]
+            mpv[hist_name] = find_mpv(histogram, minimum, maximum)
             fit(histogram, minimum, maximum, canvas)
 
 print(mpv)
