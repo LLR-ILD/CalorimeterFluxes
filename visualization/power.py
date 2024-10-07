@@ -2,7 +2,7 @@ import ROOT
 import os
 from array import array
 import ROOT
-from twoD_histograms.D_histograms_library_new import get_histograms
+from twoD_histograms.D_histograms_library import get_histograms
 
 def conversion(x, a, b):
     y = a*x + b

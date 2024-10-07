@@ -54,7 +54,7 @@ for system in systems:
     system_functions[system] = functions_list
     histograms_to_select[system] = {}
     for function in functions_list:
-        histograms_to_select[system][function] = {"time":True, "time_high":False, "hit_time":False, "hit_time_high":False, "lower_scale_energy":True, "upper_scale_energy":True, "all_scale_energy":True, "scaled_upper_scale_energy": True, "scaled_all_scale_energy":True, "low_#Nhits":True, "high_#Nhits":True, "all_#Nhits":True}
+        histograms_to_select[system][function] = {"time":True, "time_high":False, "hit_time":False, "hit_time_high":False, "lower_scale_energy":False, "upper_scale_energy":False, "all_scale_energy":False, "scaled_upper_scale_energy": False, "scaled_all_scale_energy":False, "low_#Nhits":False, "high_#Nhits":False, "all_#Nhits":False}
 #Creating ROOT canvas to save the histograms
 canvas = TCanvas('canvas', 'Histogram', 1000, 600)
 

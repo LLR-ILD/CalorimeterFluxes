@@ -129,21 +129,21 @@ def get_histograms(file):
 
 """ A function that reads off the x-axis titles from the histograms.
 """
-def get_x_titles(histogram_dictionary, systems):
+def get_x_titles(histogram_dictionary, systems, excluded_types):
     histograms_x_titles = OrderedDict()
-    for system in systems:
-        x_titles = []
-        histogram_type_names = histogram_dictionary[system]["no_function"].keys()
-        for type_name in histogram_type_names:
-            x_titles.append(histogram_dictionary[system]["no_function"][type_name][0].GetXaxis().GetTitle()) # The x-axis titles are the same for all the selections and all the functions. 
-        histograms_x_titles[system] = x_titles
+    histogram_types_unfiltered = histogram_dictionary[systems[0]]["no_function"].keys()
+    histogram_type_names = [item for item in histogram_types_unfiltered if item not in excluded_types]
+    for type_name in histogram_type_names:
+        x_title = histogram_dictionary[systems[0]]["no_function"][type_name][0].GetXaxis().GetTitle()
+        histograms_x_titles[type_name] = x_title
     return histograms_x_titles
 
 """ A function that reads off the y-axis titles from the histograms.
 """
-def get_y_titles(histogram_dictionary, systems):
+def get_y_titles(histogram_dictionary, systems, excluded_types):
     histograms_y_titles = OrderedDict()
-    histogram_type_names = histogram_dictionary[systems[0]]["no_function"].keys()
+    histogram_types_unfiltered = histogram_dictionary[systems[0]]["no_function"].keys()
+    histogram_type_names = [item for item in histogram_types_unfiltered if item not in excluded_types]
     for type_name in histogram_type_names:
         y_title = histogram_dictionary[systems[0]]["no_function"][type_name][0].GetYaxis().GetTitle() # The y-axis titles are the same for all the selections, all the systems and all the functions. 
         histograms_y_titles[type_name] = y_title
@@ -247,14 +247,13 @@ def make_histogram(histogram_dictionary, histogram_selection_dictionary, histogr
         hist_2d_type = ROOT.TH2F("{}_{}_{}_{}_{}".format(system, function, histogram_type, element, element_selection), "{} {} {} {}".format(system, histogram_type, element, element_selection), len(selected_histogram_list_type_for_element), 0, len(selected_histogram_list_type_for_element), max_bins_type, min_bin_value, max_bin_value)
     else:
         hist_2d_type = ROOT.TH2F("{}_{}_{}".format(system, function, histogram_type), "{}_{}_{}".format(system, function, histogram_type), len(histogram_dictionary[system][function][histogram_type]), 0, len(histogram_dictionary[system][function][histogram_type]), max_bins_type, min_bin_value, max_bin_value)
-    hist_2d_type.GetYaxis().SetTitle(histograms_x_titles[system][histogram_dictionary[system][function].keys().index(histogram_type)])
+    hist_2d_type.GetYaxis().SetTitle(histograms_x_titles[histogram_type])
     secondary = histogram_type in secondary_types
     for i, hist in enumerate(selected_histogram_list_type_for_element):
         hist_2d_type.GetXaxis().SetBinLabel(i+1, histos_names[i])
         oneD_histos_stats.append(get_secondary_stat(hist, secondary))
         for bin in range(1, hist.GetNbinsX() + 1):
             hist_2d_type.Fill(i, hist.GetBinCenter(bin), hist.GetBinContent(bin))
-    # print(system, get_min(selected_histogram_list_type_for_element))
     hist_2d_type.SetMinimum(get_min_max(selected_histogram_list_type_for_element)[0])
     hist_2d_type.SetMaximum(get_min_max(selected_histogram_list_type_for_element)[1])
     return hist_2d_type, oneD_histos_stats
@@ -321,7 +320,7 @@ def create_histogram(twoDD_histograms, oneDD_stats, histogram_dictionary, histog
         twoDD_histograms[system][function][histogram_type] = hist_2d_list
         oneDD_stats[system][function][histogram_type] = oneD_stats_list 
 
-def all_histograms(histogram_dictionary, histograms_x_titles, histogram_selection_dictionary, Bin_labels, systems, system_functions, secondary_types=[]):
+def all_histograms(histogram_dictionary, histograms_x_titles, histogram_selection_dictionary, Bin_labels, systems, system_functions, excluded_types, secondary_types=[]):
     twoD_histograms, oneD_stats = {}, {}
 
     for system in systems:
@@ -329,7 +328,8 @@ def all_histograms(histogram_dictionary, histograms_x_titles, histogram_selectio
         functions = system_functions[system]  
         for function in functions:
             twoD_histograms[system][function], oneD_stats[system][function]= {}, {}
-            histogram_types = histogram_dictionary[system][function].keys()
+            histogram_types_unfiltered = histogram_dictionary[system][function].keys()
+            histogram_types = [item for item in histogram_types_unfiltered if item not in excluded_types]
             for histogram_type in histogram_types:
                 if function == "no_function" and len(histogram_selection_dictionary[system][function].keys()) != 0 and len(histogram_selection_dictionary[system][function].keys()) != 1:
                     twoD_histograms[system][function][histogram_type], oneD_stats[system][function][histogram_type]= {}, {}

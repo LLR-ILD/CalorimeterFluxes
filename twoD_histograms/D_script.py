@@ -1,5 +1,4 @@
 from D_histograms_library import get_histograms, get_x_titles, get_y_titles, histograms_selections, all_histograms, write_histograms
-from visualization.power import conversion, stdv_conversion
 import sys
 import ROOT
 
@@ -21,20 +20,16 @@ file = ROOT.TFile.Open(root_file)
 histogram_dictionary, stats_not_used = get_histograms(file)
 system_functions = {}
 systems = histogram_dictionary.keys()
-# systems = ["SiECALBarrel"]
 for system in systems:
     functions = histogram_dictionary[system].keys()
     system_functions[system] = functions
-histograms_x_titles = get_x_titles(histogram_dictionary, systems)
-histograms_y_titles = get_y_titles(histogram_dictionary, systems)
-
+excluded_types = ["hit_time", "hit_time_high"]
+histograms_x_titles = get_x_titles(histogram_dictionary, systems, excluded_types)
+histograms_y_titles = get_y_titles(histogram_dictionary, systems, excluded_types)
 histogram_selection_dictionary, Bin_labels = histograms_selections(histogram_dictionary, systems, system_functions)
 
-# secondary_dict = {"low_power":"low_#Nhits", "high_power":"high_#Nhits", "all_power":"all_#Nhits"}
-# secondary_histograms = secondary_dict.keys()
 secondary_types = ["low_power", "high_power", "all_power", "low_data", "high_data", "all_data"]
-twoD_histograms, stats = all_histograms(histogram_dictionary, histograms_x_titles, histogram_selection_dictionary, Bin_labels, systems, system_functions, secondary_types)
-a,b = 2,2 #Conversion parameters
+twoD_histograms, stats = all_histograms(histogram_dictionary, histograms_x_titles, histogram_selection_dictionary, Bin_labels, systems, system_functions, excluded_types, secondary_types)
 
 units = {"time":"ns", "lower_scale_energy":"GeV", "upper_scale_energy":"GeV", "all_scale_energy":"GeV", "scaled_upper_scale_energy":"MIP", "scaled_all_scale_energy":"MIP", "low_#Nhits":"#hits", "high_#Nhits":"#hits", "all_#Nhits":"#hits", "low_power":"Watt", "high_power":"Watt", "all_power":"Watt", "low_data":"Bytes", "high_data":"Bytes", "all_data":"Bytes"}
 entries = {"time":"hits*energy [GeV]", "lower_scale_energy":"hits", "upper_scale_energy":"hits", "all_scale_energy":"hits", "scaled_upper_scale_energy":"hits", "scaled_all_scale_energy":"hits", "low_#Nhits":"events", "high_#Nhits":"events", "all_#Nhits":"events", "low_power":"events", "high_power":"events", "all_power":"events", "low_data":"events", "high_data":"events", "all_data":"events"}
