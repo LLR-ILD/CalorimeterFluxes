@@ -9,7 +9,7 @@ Table of contents
   * [CalorimeterFluxes](#CalorimeterFluxes)
   * [Table of contents](#table-of-contents)
   * [Clone and initialisation](#clone-and-initilisation)
-  * [Uisng Hierarchy](#using-hierarchy)
+  * [Using Hierarchy](#using-hierarchy)
 
 Clone and initialisation
 =================
