@@ -6,7 +6,8 @@ Further utilities can be made using this package as well such as taking generato
 
 A description and use case of the package has been published in JINST:
 [10.1088/1748-0221/19/10/T10009](10.1088/1748-0221/19/10/T10009)
-please refer to as:
+please cite as:
+
 K. Hassouna and V. Boudry, CaloFlux: a tool to estimate fluxes in calorimeters at colliders, JINST 19, (2024) T10009.
 
 
