@@ -5,7 +5,7 @@ This package is used mainly to take slcio files of fully simulated physics proce
 Further utilities can be made using this package as well such as taking generator-level simulation and running a full simulation, producing 2D histograms of grouped 1D histograms, and producing geometry plots of the calorimeter. 
 
 A description and use case of the package has been published in JINST:
-[]{10.1088/1748-0221/19/10/T10009}
+[](10.1088/1748-0221/19/10/T10009)
 please refer to as:
 K. Hassouna and V. Boudry, CaloFlux: a tool to estimate fluxes in calorimeters at colliders, JINST 19, (2024) T10009.
 
